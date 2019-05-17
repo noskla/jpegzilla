@@ -1,20 +1,61 @@
 #!/usr/bin/python3
 
-import sys, ntpath, os, subprocess, threading, hurry.filesize, platform, shutil
+import sys, ntpath, os, subprocess, threading, hurry.filesize, platform, shutil, glob
 import tkinter, tkinter.ttk, tkinter.filedialog
 from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '0.4'
+VER = '0.4.1'
 
-TEMPDIR = ((os.getenv('WINDIR') + '/tmp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
+TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
     os.mkdir(TEMPDIR)
 
 class jpegzilla:
 
     def __init__(self):
+
+        # Check if Mozjpeg is available.
+        if OS == 'Windows':
+
+            win_paths = os.getenv('PATH').split(';')
+
+            if os.path.isfile('./cjpeg.exe') and glob.glob('./libjpeg-*.dll'):
+                print('Found MozJPEG in local directory.')
+                pass
+
+            elif os.path.isfile('./jpegzilla-mozjpeg_in_path'):
+                pass
+
+            else:
+
+                print('MozJPEG not found in local directory. Searching in PATH...')
+                mozjpeg_found = False
+
+                for path in win_paths:
+                    if os.path.isfile(path.replace('\\', '/') + ('/' if path[-1:] == '' else '') + 'cjpeg.exe' ):
+                        print('Found MozJPEG in PATH: ' + path + '\nSaving information in text file for quicker future startups...')
+                        mozjpeg_found = True
+                        f = open('./jpegzilla-mozjpeg_in_path', 'w')
+                        f.write(path)
+                        f.close()
+                        break
+
+                if not mozjpeg_found:
+                    print('MozJPEG has been not found in the system. Please check my installation guide:\nhttps://github.com/FabulousKana/jpegzilla/blob/master/README.md#installation')
+                    sys.exit()
+
+
+
+        else:
+
+            if not os.path.isfile('/usr/bin/cjpeg') or not os.path.isfile('/bin/cjpeg'):
+                print('MozJPEG has been not found in the system. Please check my installation guide:\nhttps://github.com/FabulousKana/jpegzilla/blob/master/README.md#installation')
+                sys.exit()
+ 
+
+            
 
         # Create root window.
         self.root = tkinter.Tk()
