@@ -8,7 +8,7 @@ FNULL = open(os.devnull, 'w')
 OS = platform.system()
 VER = '0.4'
 
-TEMPDIR = ((os.getenv('WINDIR') + '/tmp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
+TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
     os.mkdir(TEMPDIR)
 
