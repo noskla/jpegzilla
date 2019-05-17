@@ -251,16 +251,20 @@ class jpegzilla:
 
 if __name__ == '__main__':
     
-    if sys.argv[1].startswith('-'):
+    try:
+        if sys.argv[1].startswith('-'):
 
-        if sys.argv[1] in ['-v', '--version']:
-            print('Jpegzilla ' + VER + '\nhttps://github.com/fabulouskana/jpegzilla')
-        elif sys.argv[1] in ['-h', '--help']:
-            print('Run program by typing "jpegzilla" or running script without any arguments.')
-            print('     -v, --version  - Display version information')
+            if sys.argv[1] in ['-v', '--version']:
+                print('Jpegzilla ' + VER + '\nhttps://github.com/fabulouskana/jpegzilla')
+            elif sys.argv[1] in ['-h', '--help']:
+                print('Run program by typing "jpegzilla" or running script without any arguments.')
+                print('     -v, --version  - Display version information')
+            else:
+                print('Unknown argument. Type --help for more information.')
+    
         else:
-            print('Unknown argument. Type --help for more information.')
+            raise IndexError
 
-    else:
+    except IndexError:
         jz = jpegzilla()
 
