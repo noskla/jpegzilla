@@ -1,8 +1,16 @@
 #!/usr/bin/python3
 
-import math, sys, ntpath, tkinter, tkinter.ttk, tkinter.filedialog, os, subprocess, threading, hurry.filesize
+import sys, ntpath, os, subprocess, threading, hurry.filesize, platform, shutil
+import tkinter, tkinter.ttk, tkinter.filedialog
+from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
+OS = platform.system()
+VER = '0.4'
+
+TEMPDIR = ((os.getenv('WINDIR') + '/tmp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
+if not os.path.exists(TEMPDIR):
+    os.mkdir(TEMPDIR)
 
 class jpegzilla:
 
@@ -55,8 +63,8 @@ class jpegzilla:
         self.gui_options['quality'].set(90)
 
         # - Place items
-        self.gui_options['quality'].place(x=10, y=60)
-        self.gui_options['smoothing'].place(x=10, y=130)
+        self.gui_options['quality'].place(x=10, y=45)
+        self.gui_options['smoothing'].place(x=10, y=105)
         self.gui_options['progressive'].place(x=220, y=70)
         self.gui_options['greyscale'].place(x=220, y=90)
         self.gui_options['arithmetic'].place(x=220, y=110)
@@ -93,7 +101,8 @@ class jpegzilla:
 
 
         self.file_queue.bind('<Delete>', lambda x:self.remove_files())
-        self.root.bind('<Shift-E>', lambda x:subprocess.Popen(['xdg-open', 'https://waa.ai/XxXN'], stdout=FNULL, stderr=subprocess.STDOUT))
+        self.file_queue.bind('<Return>', lambda x:self.show_preview())
+        self.root.bind('<Shift-E>', lambda x:subprocess.Popen(['start' if OS == 'Windows' else 'xdg-open', 'https://waa.ai/XxXN'], stdout=FNULL, stderr=subprocess.STDOUT))
 
         self.root.mainloop()
 
@@ -108,6 +117,39 @@ class jpegzilla:
             self.buttons['run'].config(state='disabled')
 
 
+    def show_preview(self):
+    
+        selected_file = self.file_queue.item(self.file_queue.selection())['values']
+        filename = ntpath.basename(selected_file[2])
+
+        self.preview_window = tkinter.Toplevel(self.root)
+        self.preview_window.title('Image preview: ' + filename)
+
+        # Open in image viewer
+        oiiv_button = tkinter.Button(
+                self.preview_window,
+                width='600',
+                text='Open in default Image viewer',
+                command=lambda:subprocess.Popen([
+                    'start' if OS == 'Windows' else 'xdg-open',
+                    TEMPDIR + filename if selected_file[1] == 'Completed' else selected_file[2]
+                    ])
+                )
+        oiiv_button.pack()
+
+        self.preview_imgfile = Image.open( TEMPDIR + filename if selected_file[1] == 'Completed' else selected_file[2] )
+
+        required_width = 800
+        wpercent = (required_width / float(self.preview_imgfile.size[0]) )
+        hsize = int( (float(self.preview_imgfile.size[1]) * float(wpercent)) )
+        self.preview_imgfile = self.preview_imgfile.resize((required_width, hsize), Image.ANTIALIAS)
+
+        self.preview_image = ImageTk.PhotoImage(self.preview_imgfile)
+
+        self.preview = tkinter.Label(self.preview_window, image=self.preview_image)
+        self.preview.image = self.preview_image
+        self.preview.pack(fill='both', expand='yes')
+
     def clean_completed(self):
 
         all_files = self.file_queue.get_children()
@@ -118,10 +160,17 @@ class jpegzilla:
 
     def save_all(self):
 
-        location = tkinter.filedialog.asksaveasfilename(title='Save compressed files', filetypes=(('7Zip archive file', '*.7z'), ('All files', '*.*')))
-        print(location)
+        location = tkinter.filedialog.askdirectory(title='Select directory to save compressed files', initialdir='~')
 
-        os.system('7z a {} /tmp/jpegzilla/'.format(location))
+        compressed_images = self.file_queue.get_children()
+
+        for image in compressed_images:
+            child_data = self.file_queue.item(image)['values']
+            filename = ntpath.basename(child_data[2])
+            if child_data[1] == 'Completed':
+                print('Moving: ' + TEMPDIR + filename + ' --> ' + location + '/' + filename)
+                shutil.move(TEMPDIR + filename, location + '/' + filename)
+
 
     def select_files(self):
 
@@ -156,10 +205,6 @@ class jpegzilla:
     def compress(self):
 
         command = "cjpeg {targa} -outfile {filename}"
-        save_dir = '/tmp/jpegzilla/'
-
-        if not os.path.exists(save_dir):
-            os.mkdir(save_dir)
 
         for parameter, value in self.cjpeg_parameters.items():
             value = value.get()
@@ -195,10 +240,10 @@ class jpegzilla:
 
                 self.file_queue.item(entry, values=( entry_data[0], 'Running...', entry_data[2] ))
 
-                c = (command.format(filename=(save_dir + img + extension), targa=('-targa' if extension == '.tga' else '')) + ' ' + entry_data[2])
+                c = (command.format(filename=(TEMPDIR + img + extension), targa=('-targa' if extension == '.tga' else '')) + ' ' + entry_data[2])
 
                 subprocess.Popen(c, shell=True, stdout=subprocess.PIPE).wait()
-                self.file_queue.item(entry, values=( entry_data[0] + ' -> ' + hurry.filesize.size(os.stat(save_dir + img + extension).st_size), 'Completed', entry_data[2] ))
+                self.file_queue.item(entry, values=( entry_data[0] + ' -> ' + hurry.filesize.size(os.stat(TEMPDIR + img + extension).st_size), 'Completed', entry_data[2] ))
 
         self.buttons['save'].configure(state='normal')
 
