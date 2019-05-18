@@ -1,0 +1,59 @@
+{
+
+	"locale-code": "en_US",
+	"locale-name": "English (United States)",
+
+	"": "-- MOZJPEG DETECTION --",
+	"mozjpeg-found-local-dir": "Found MozJPEG in local directory.",
+	"mozjpeg-search-in-path": "MozJPEG has been not found in local directory. Searching in PATH...",
+	"mozjpeg-found-path": "Found MozJPEG in PATH: {path} \nSaving information in text file for faster startups...",
+	"mozjpeg-not-found-error": "MozJPEG has been not found in the system. Please check the installation guide:\nhttps://github.com/fabulouskana/jpegzilla/blob/master/README.md#installation",
+
+	"": "-- WINDOW NAMES --",
+	"window-title": "Jpegzilla - A MozJPEG graphical user interface",
+	"image-preview-title": "Image Preview - {filename}",
+	"save-all-title": "Select directory to save compressed files to",
+	"select-files-title": "Select which files to import",
+
+	"": "-- TOP BUTTONS --",
+	"run-button": "COMPRESS",
+	"save-button": "SAVE AS",
+	"import-button": "IMPORT",
+
+	"": "-- GUI OPTIONS --",
+	"image-quality": "Image Quality",
+	"smoothing": "Smoothing",
+	"progressive": "Progressive",
+	"greyscale": "Greyscale",
+	"arithmetic": "Use arithmetic coding",
+
+	"": "-- QUEUE --",
+	"clear-all-button": "CLEAR ALL",
+	"cancel-button": "CANCEL",
+	"loaded-files": "Loaded images: {}",
+
+	"treeview-filename": "Filename",
+	"treeview-size": "Size",
+	"treeview-status": "Status",
+
+	"status-completed": "Completed",
+	"status-running": "Running...",
+	"status-new": "New",
+
+	"select-filetypes": {
+		"compatible-formats": "Compatible file formats",
+		"all-files": "All files"
+	},
+
+	"": "-- PREVIEW --",
+	"open-in-image-viewer": "Open in system default Image Viewer",
+
+	"": "-- CLI --",
+	"version-info": "Jpegzilla {version}\nhttps://github.com/fabulouskana/jpegzilla",
+	"help-info": "Run program by just typing \"jpegzilla\" or by running script without any arguments.\n    -v, --version  - Display version information.",
+	"unknown-argument": "Unknown argument. Type --help for more information."
+
+
+
+}
+

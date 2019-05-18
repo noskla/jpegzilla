@@ -1,0 +1,59 @@
+{
+
+	"locale-code": "pl_PL",
+	"locale-name": "Polski",
+
+	"": "-- MOZJPEG DETECTION --",
+	"mozjpeg-found-local-dir": "Znaleziono MozJPEG w aktualnym katalogu..",
+	"mozjpeg-search-in-path": "Nie znaleziono MozJPEG w aktualnym katalogu. Szukam w PATH...",
+	"mozjpeg-found-path": "Znaleziono MozJPEG w PATH: {path} \nZapisuję informację, by przyśpieszyć późniejsze uruchomienia...",
+	"mozjpeg-not-found-error": "MozJPEG nie został znaleziony w systemie. Zajrzyj do poradnika instalacji:\nhttps://github.com/fabulouskana/jpegzilla/blob/master/README.md#installation",
+
+	"": "-- WINDOW NAMES --",
+	"window-title": "Jpegzilla - Graficzny interfejs użytkownika dla MozJPEG",
+	"image-preview-title": "Pogląd obrazu - {filename}",
+	"save-all-title": "Wybierz katalog do którego zapisać skompresowane pliki...",
+	"select-files-title": "Wybierz pliki do importu...",
+
+	"": "-- TOP BUTTONS --",
+	"run-button": "KOMPRESUJ",
+	"save-button": "ZAPISZ",
+	"import-button": "IMPORTUJ",
+
+	"": "-- GUI OPTIONS --",
+	"image-quality": "Jakość Obrazu",
+	"smoothing": "Wygładzanie",
+	"progressive": "Utwórz progresywny plik JPEG",
+	"greyscale": "Utwórz monochromatyczny plik JPEG",
+	"arithmetic": "Używaj kodowania arytmetycznego",
+
+	"": "-- QUEUE --",
+	"clear-all-button": "WYCZYŚĆ",
+	"cancel-button": "PRZERWIJ",
+	"loaded-files": "Załadowano obrazów: {}",
+
+	"treeview-filename": "Nazwa pliku",
+	"treeview-size": "Rozmiar",
+	"treeview-status": "Status",
+
+	"status-completed": "Ukończono",
+	"status-running": "Kompresowanie...",
+	"status-new": "Nowy",
+
+	"select-filetypes": {
+		"compatible-formats": "Kompatybilne formaty plików",
+		"all-files": "Wszystkie pliki"
+	},
+
+	"": "-- PREVIEW --",
+	"open-in-image-viewer": "Otwórz w domyślnej przeglądarce zdjęć",
+
+	"": "-- CLI --",
+	"version-info": "Jpegzilla {version}\nhttps://github.com/fabulouskana/jpegzilla",
+	"help-info": "Uruchom program za pomocą komendy \"jpegzilla\" lub uruchamiając skrypt bez argumentów.\n    -v, --version  - Wyświetl informacje o wersji.",
+	"unknown-argument": "Nieznany argument. Wpisz --help, by uzyskać więcej informacji."
+
+
+
+}
+

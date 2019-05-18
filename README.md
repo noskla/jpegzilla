@@ -12,11 +12,13 @@ Jpegzilla is a simple, cross-platform and lightweight graphical user interface f
 sudo pacman -Syu
 # Install required dependencies.
 sudo pacman -S python-pip git
-# Install MozJPEG from AUR (this may differ depending what software you use, you can also compile it for your own)
+# Install MozJPEG from AUR (this may differ depending what software you use,
+# you can also compile it for your own)
 yay mozjpeg # or pacaur -S aur/mozjpeg or yaourt mozjpeg
-# Download and install Jpegzilla.
+# Download, install pip dependencies and run Jpegzilla.
 git clone https://github.com/fabulouskana/jpegzilla
-sudo -H pip install ./jpegzilla
+sudo -H pip install -r jpegzilla/requirements.txt
+python jpegzilla/jz.py
 # Done.
 ```
 
@@ -24,7 +26,7 @@ sudo -H pip install ./jpegzilla
 ---
 ```bash
 # Install required dependencies.
-sudo apt install python3-pip git cmake autoconf automake libtool nasm make pkg-config -y
+sudo apt install python3 python3-pip git cmake autoconf automake libtool nasm make pkg-config -y
 # Download and compile MozJPEG
 git clone https://github.com/mozilla/mozjpeg.git
 cd mozjpeg
@@ -33,9 +35,10 @@ mkdir build && cd build
 sh ../configure
 sudo make install
 sudo ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/mozjpeg
-# Download and install Jpegzilla.
+# Download, install pip requirements and run Jpegzilla.
 git clone https://github.com/fabulouskana/jpegzilla
-sudo -H pip install ./jpegzilla
+sudo -H python3 -m pip install -r jpegzilla/requirements.txt
+python3 jpegzilla/jz.py
 ```
 #### Windows
 
@@ -43,12 +46,10 @@ sudo -H pip install ./jpegzilla
 ---
 - [Download and install Python](https://www.python.org/downloads/).
 - While installing make sure you have checked "Add Python to PATH", "pip" and "tcl/tk and IDLE"
-- Download this repository, open cmd.exe in it and go back one time (``cd ..``).
-- Install Jpegzilla: ``python -m pip install ./jpegzilla``
+- Download this repository, unpack it in new directory and open cmd.exe in it.
 - [Download the MozJPEG binary](https://mozjpeg.codelove.de/binaries.html) or [compile it for your own](https://github.com/mozilla/mozjpeg).
-- Put the cjpeg.exe and all required dll libraries in new empty directory.
-- Add that directory to PATH. [How to add things to PATH?](https://stackoverflow.com/questions/44272416/how-to-add-a-folder-to-path-environment-variable-in-windows-10-with-screensho)
-- You should be able to run Jpegzilla with ``python -m jpegzilla``.
+- Put the cjpeg.exe and all required dll libraries in the Jpegzilla directory.
+- You should be able to run Jpegzilla with ``python jz.py``, ``py jz.py`` or even by double-clicking the jz.py file.
 
 ###### Windows XP
 ---

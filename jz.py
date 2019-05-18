@@ -3,13 +3,15 @@
 # A simple, cross-platform and lightweight graphical user interface for MozJPEG.
 # https://github.com/fabulouskana/jpegzilla
 
-import sys, ntpath, os, subprocess, threading, hurry.filesize, platform, shutil, glob
+import sys, ntpath, os, subprocess, threading, json
+import hurry.filesize, platform, shutil, glob
 import tkinter, tkinter.ttk, tkinter.filedialog
+
 from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '0.5.1'
+VER = '0.6.0'
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
@@ -19,13 +21,85 @@ class jpegzilla:
 
     def __init__(self):
 
+        first_run = False
+
+        # Load locale file.
+        locale_path = os.path.dirname(os.path.abspath(__file__).replace('\\', '/')) + '/locale/'
+
+        try:
+            with open(locale_path + 'locale.txt', 'r') as f:
+                locale_code = f.read().rstrip('\n')
+                if not locale_code:
+                    first_run = True
+                f.close()
+
+        except FileNotFoundError:
+            first_run = True
+
+
+        if not first_run:
+
+            if not os.path.isfile(locale_path + locale_code + '.json'):
+                print('Locale with given language code doesn\'t exist. Fallback to en_US...')
+                locale_code = 'en_US'
+
+            with open(locale_path + locale_code + '.json', 'r') as f:
+                self.locale = json.load(f)
+                f.close()
+        
+        else:
+
+            def set_language(lang, setup_window):
+
+                with open(locale_path + lang + '.json', 'r') as f:
+                    self.locale = json.load(f)
+                    f.close()
+
+                with open(locale_path + 'locale.txt', 'w') as f:
+                    f.write(lang)
+                    f.close()
+
+                setup_window.destroy()
+
+
+            raw_languages_list = os.listdir(locale_path)
+            languages_list = []
+
+            for lang in raw_languages_list:
+                if lang.endswith('.json'):
+                    languages_list.append(lang[:-5])
+
+            first_run_setup = tkinter.Tk()
+            first_run_setup.geometry('300x180')
+            first_run_setup.title('Jpegzilla - First run setup')
+            first_run_setup.resizable(False, False)
+            first_run_setup.protocol('WM_DELETE_WINDOW', lambda:sys.exit())
+            language = tkinter.StringVar(first_run_setup)
+            language.set('Select a language')
+
+            first_run_setup_skip = tkinter.Button(first_run_setup, text='Skip setup (Will use defaults)', command=lambda:set_language('en_US', first_run_setup))
+            first_run_setup_done = tkinter.Button(first_run_setup, text='Accept settings', command=lambda:set_language(language.get(), first_run_setup))
+            first_run_setup_lang = tkinter.OptionMenu(first_run_setup, language, *languages_list)
+            first_run_setup_text = tkinter.Label(first_run_setup, text='Thanks for using Jpegzilla!\nPlease choose a language you wanna use\nor click "SKIP".\n')
+
+            first_run_setup_text.pack()
+            first_run_setup_lang.pack()
+            first_run_setup_skip.pack(fill='x', side='bottom')
+            first_run_setup_done.pack(fill='x', side='bottom')
+
+            first_run_setup.mainloop()
+
+            print('Loaded language: ' + self.locale['locale-name'])
+
+
+
         # Check if Mozjpeg is available.
         if OS == 'Windows':
 
             win_paths = os.getenv('PATH').split(';')
 
             if os.path.isfile('./cjpeg.exe') and glob.glob('./libjpeg-*.dll'):
-                print('Found MozJPEG in local directory.')
+                print(self.locale['mozjpeg-found-local-dir'])
                 pass
 
             elif os.path.isfile('./jpegzilla-mozjpeg_in_path'):
@@ -33,12 +107,12 @@ class jpegzilla:
 
             else:
 
-                print('MozJPEG not found in local directory. Searching in PATH...')
+                print(self.locale['mozjpeg-search-in-path'])
                 mozjpeg_found = False
 
                 for path in win_paths:
                     if os.path.isfile(path.replace('\\', '/') + ('/' if path[-1:] == '' else '') + 'cjpeg.exe' ):
-                        print('Found MozJPEG in PATH: ' + path + '\nSaving information in text file for quicker future startups...')
+                        print(self.locale['mozjpeg-found-path'].format(path=path))
                         mozjpeg_found = True
                         f = open('./jpegzilla-mozjpeg_in_path', 'w')
                         f.write(path)
@@ -46,7 +120,7 @@ class jpegzilla:
                         break
 
                 if not mozjpeg_found:
-                    print('MozJPEG has been not found in the system. Please check my installation guide:\nhttps://github.com/FabulousKana/jpegzilla/blob/master/README.md#installation')
+                    print(self.locale['mozjpeg-not-found-error'])
                     sys.exit()
 
 
@@ -54,7 +128,7 @@ class jpegzilla:
         else:
 
             if not os.path.isfile('/usr/bin/cjpeg') or not os.path.isfile('/bin/cjpeg'):
-                print('MozJPEG has been not found in the system. Please check my installation guide:\nhttps://github.com/FabulousKana/jpegzilla/blob/master/README.md#installation')
+                print(self.locale['mozjpeg-not-found-error'])
                 sys.exit()
 
         self.bg = '#FEFEFE' # Background color
@@ -66,7 +140,7 @@ class jpegzilla:
         # Create root window.
         self.root = tkinter.Tk()
         self.root.geometry('600x450')
-        self.root.title("JpegZilla - A MozJPEG frontend.")
+        self.root.title(self.locale['window-title'])
         self.root.resizable(False, False)
         self.root.configure(background=self.bg)
 
@@ -75,7 +149,7 @@ class jpegzilla:
         self.buttons = {
                     'run': tkinter.Button(
                         self.root, 
-                        text='COMPRESS', 
+                        text=self.locale['run-button'], 
                         state='disabled', 
                         bg=self.bg, 
                         fg=self.fg, 
@@ -90,7 +164,7 @@ class jpegzilla:
                         ),
                     'save': tkinter.Button(
                         self.root, 
-                        text='SAVE AS', 
+                        text=self.locale['save-button'], 
                         state='disabled', 
                         bg=self.bg, 
                         fg=self.fg, 
@@ -105,7 +179,7 @@ class jpegzilla:
                         ),
                     'import': tkinter.Button(
                         self.root, 
-                        text='IMPORT', 
+                        text=self.locale['import-button'], 
                         background=self.bg, 
                         fg=self.fg, 
                         bd=0, 
@@ -140,7 +214,7 @@ class jpegzilla:
 
         self.gui_options = {
                 'quality': tkinter.Scale(
-                    self.root, label='Image quality', orient='horizontal', length='200', 
+                    self.root, label=self.locale['image-quality'], orient='horizontal', length='200', 
                     bg=self.bg, fg=self.fg, 
                     bd=0, 
                     highlightbackground=self.bg, 
@@ -149,7 +223,7 @@ class jpegzilla:
                     variable=self.cjpeg_parameters['-quality']
                     ),
                 'smoothing': tkinter.Scale(
-                    self.root, label='Smoothing', orient='horizontal', length='200', 
+                    self.root, label=self.locale['smoothing'], orient='horizontal', length='200', 
                     bg=self.bg, fg=self.fg, 
                     bd=0, 
                     highlightbackground=self.bg, 
@@ -158,7 +232,7 @@ class jpegzilla:
                     variable=self.cjpeg_parameters['-smooth']
                     ),
                 'progressive': tkinter.Checkbutton(
-                    self.root, text='Progressive',
+                    self.root, text=self.locale['progressive'],
                     bg=self.bg, fg=self.fg,
                     bd=0, 
                     highlightbackground=self.bg, 
@@ -167,7 +241,7 @@ class jpegzilla:
                     variable=self.cjpeg_parameters['-progressive']
                     ),
                 'greyscale': tkinter.Checkbutton(
-                    self.root, text='Greyscale', 
+                    self.root, text=self.locale['greyscale'], 
                     bg=self.bg, fg=self.fg,
                     bd=0, 
                     highlightbackground=self.bg, 
@@ -176,7 +250,7 @@ class jpegzilla:
                     variable=self.cjpeg_parameters['-greyscale']
                     ),
                 'arithmetic': tkinter.Checkbutton(
-                    self.root, text='Use arithmetic coding', 
+                    self.root, text=self.locale['arithmetic'], 
                     bg=self.bg, fg=self.fg,
                     bd=0, 
                     highlightbackground=self.bg, 
@@ -210,7 +284,7 @@ class jpegzilla:
 
         self.file_queue_rmdone = tkinter.Button(
                 self.queue,
-                text='CLEAR ALL', 
+                text=self.locale['clear-all-button'], 
                 bg=self.bg, 
                 fg=self.fg, 
                 bd=0, 
@@ -226,7 +300,7 @@ class jpegzilla:
 
         self.cancel_button = tkinter.Button(
                 self.queue,
-                text='CANCEL',
+                text=self.locale['cancel-button'],
                 state='disabled',
                 bg=self.bg,
                 fg=self.fg,
@@ -241,16 +315,16 @@ class jpegzilla:
                 )
         self.cancel_button.pack(side='top', anchor='e')
 
-        self.queue_label = tkinter.Label(self.queue, bg=self.bg, fg=self.fg, text='Loaded files: 0')
+        self.queue_label = tkinter.Label(self.queue, bg=self.bg, fg=self.fg, text=self.locale['loaded-files'].format('0'))
         self.queue_label.pack(side='top', anchor='w')
 
         self.file_queue = tkinter.ttk.Treeview(self.queue, selectmode='browse')
         self.file_queue['columns'] = ('size', 'status', 'loc')
-        self.file_queue.heading('#0', text='Filename')
+        self.file_queue.heading('#0', text=self.locale['treeview-filename'])
         self.file_queue.column('#0', width=245, stretch='no')
-        self.file_queue.heading('size', text='Size')
+        self.file_queue.heading('size', text=self.locale['treeview-size'])
         self.file_queue.column('size', width=145, stretch='no')
-        self.file_queue.heading('status', text='Status')
+        self.file_queue.heading('status', text=self.locale['treeview-status'])
         self.file_queue.column('status', width=195, stretch='no')
         self.file_queue.heading('loc')
         self.file_queue.column('loc', width=0, stretch='no')
@@ -274,7 +348,7 @@ class jpegzilla:
         for image in selected_files:
             self.file_queue.delete(image)
 
-        self.queue_label.configure(text='Loaded files: {}'.format(
+        self.queue_label.configure(text=self.locale['loaded-files'].format(
             str(len(
                 self.file_queue.get_children()
                 ))
@@ -289,21 +363,21 @@ class jpegzilla:
         filename = ntpath.basename(selected_file[2])
 
         self.preview_window = tkinter.Toplevel(self.root)
-        self.preview_window.title('Image preview: ' + filename)
+        self.preview_window.title(self.locale['image-preview-title'].format(filename))
 
         # Open in image viewer
         oiiv_button = tkinter.Button(
                 self.preview_window,
                 width='600',
-                text='Open in default Image viewer',
+                text=self.locale['open-in-image-viewer'],
                 command=lambda:subprocess.Popen([
                     'start' if OS == 'Windows' else 'xdg-open',
-                    TEMPDIR + filename if selected_file[1] == 'Completed' else selected_file[2]
+                    TEMPDIR + filename if selected_file[1] == self.locale['status-completed'] else selected_file[2]
                     ])
                 )
         oiiv_button.pack()
 
-        self.preview_imgfile = Image.open( TEMPDIR + filename if selected_file[1] == 'Completed' else selected_file[2] )
+        self.preview_imgfile = Image.open( TEMPDIR + filename if selected_file[1] == self.locale['status-completed'] else selected_file[2] )
 
         required_width = 800
         wpercent = (required_width / float(self.preview_imgfile.size[0]) )
@@ -322,21 +396,20 @@ class jpegzilla:
         for image in all_files:
             self.file_queue.delete(image)
 
-        self.queue_label.configure(text='Loaded files: 0')
+        self.queue_label.configure(text=self.locale['loaded-files'].format('0'))
         self.buttons['run'].configure(state='disabled')
         self.buttons['save'].configure(state='disabled')
 
     def save_all(self):
 
-        location = tkinter.filedialog.askdirectory(title='Select directory to save compressed files', initialdir='~')
+        location = tkinter.filedialog.askdirectory(title=self.locale['save-all-title'], initialdir='~')
 
         compressed_images = self.file_queue.get_children()
 
         for image in compressed_images:
             child_data = self.file_queue.item(image)['values']
             filename = ntpath.basename(child_data[2])
-            if child_data[1] == 'Completed':
-                print('Moving: ' + TEMPDIR + filename + ' --> ' + location + '/' + filename)
+            if child_data[1] == self.locale['status-completed']:
                 shutil.move(TEMPDIR + filename, location + '/' + filename)
 
 
@@ -344,10 +417,10 @@ class jpegzilla:
 
         filenames = tkinter.filedialog.askopenfilenames(
                     initialdir='~',
-                    title='Select files to import',
+                    title=self.locale['select-files-title'],
                     filetypes=(
-                        ('Compatible formats', ['*.jpeg', '*.jpg', '*.png', '*.tga', '*.bmp']),
-                        ('All files', '*.*')
+                        (self.locale['select-filetypes']['compatible-formats'], ['*.jpeg', '*.jpg', '*.tga']),
+                        (self.locale['select-filetypes']['all-files'], '*.*')
                     )
                 )
         self.filenames = self.root.tk.splitlist(filenames)
@@ -357,13 +430,13 @@ class jpegzilla:
             filesize = hurry.filesize.size(os.stat(image).st_size)
 
             self.file_queue.insert('', 'end', text=ntpath.basename(image), values=(
-                     filesize, 'New', image
+                     filesize, self.locale['status-new'], image
                 ))
 
         if self.filenames:
             self.buttons['run'].config(state='normal')
 
-        self.queue_label.configure(text='Loaded files: {}'.format(str(len(self.file_queue.get_children()))))
+        self.queue_label.configure(text=self.locale['loaded-files'].format(str(len(self.file_queue.get_children()))))
 
     def run(self):
 
@@ -407,17 +480,17 @@ class jpegzilla:
             img, extension = os.path.splitext(entry_data[2])
             img = img.split('/')[len(img.split('/')) - 1]
 
-            if entry_data[1] == 'Completed':
+            if entry_data[1] == self.locale['status-completed']:
                 pass
             
             else:
 
-                self.file_queue.item(entry, values=( entry_data[0], 'Running...', entry_data[2] ))
+                self.file_queue.item(entry, values=( entry_data[0], self.locale['status-running'], entry_data[2] ))
 
                 c = (command.format(filename=(TEMPDIR + img + extension), targa=('-targa' if extension == '.tga' else '')) + ' ' + entry_data[2])
 
                 subprocess.Popen(c, shell=True, stdout=subprocess.PIPE).wait()
-                self.file_queue.item(entry, values=( entry_data[0] + ' -> ' + hurry.filesize.size(os.stat(TEMPDIR + img + extension).st_size), 'Completed', entry_data[2] ))
+                self.file_queue.item(entry, values=( entry_data[0] + ' -> ' + hurry.filesize.size(os.stat(TEMPDIR + img + extension).st_size), self.locale['status-completed'], entry_data[2] ))
 
             if self.cancel_thread:
                 self.cancel_thread = False
@@ -435,12 +508,11 @@ if __name__ == '__main__':
         if sys.argv[1].startswith('-'):
 
             if sys.argv[1] in ['-v', '--version']:
-                print('Jpegzilla ' + VER + '\nhttps://github.com/fabulouskana/jpegzilla')
+                print(self.locale['version-info'].format(VER))
             elif sys.argv[1] in ['-h', '--help']:
-                print('Run program by typing "jpegzilla" or running script without any arguments.')
-                print('     -v, --version  - Display version information')
+                print(self.locale['help-info'])
             else:
-                print('Unknown argument. Type --help for more information.')
+                print(self.locale['unknown-argument'])
     
         else:
             raise IndexError
