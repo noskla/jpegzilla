@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+# Jpegzilla
+# A simple, cross-platform and lightweight graphical user interface for MozJPEG.
+# https://github.com/fabulouskana/jpegzilla
 
 import sys, ntpath, os, subprocess, threading, hurry.filesize, platform, shutil, glob
 import tkinter, tkinter.ttk, tkinter.filedialog
@@ -6,7 +9,7 @@ from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '0.4.1'
+VER = '0.5'
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
@@ -53,29 +56,72 @@ class jpegzilla:
             if not os.path.isfile('/usr/bin/cjpeg') or not os.path.isfile('/bin/cjpeg'):
                 print('MozJPEG has been not found in the system. Please check my installation guide:\nhttps://github.com/FabulousKana/jpegzilla/blob/master/README.md#installation')
                 sys.exit()
- 
 
-            
+        self.bg = '#FEFEFE' # Background color
+        self.fg = '#000000' # Foreground color
+        self.fgdis = '#555555' # Foreground color of disabled element
 
         # Create root window.
         self.root = tkinter.Tk()
         self.root.geometry('600x450')
         self.root.title("JpegZilla - A MozJPEG frontend.")
         self.root.resizable(False, False)
+        self.root.configure(background=self.bg)
 
         # Primary buttons
 
         self.buttons = {
-                    'run':    tkinter.Button(self.root, text='Compress', state='disabled', command=lambda:self.run()),
-                    'save':   tkinter.Button(self.root, text='Save as...', state='disabled', command=lambda:self.save_all()),
-                    'import': tkinter.Button(self.root, text='Import items', command=lambda:self.select_files()),
+                    'run': tkinter.Button(
+                        self.root, 
+                        text='COMPRESS', 
+                        state='disabled', 
+                        bg=self.bg, 
+                        fg=self.fg, 
+                        bd=0, 
+                        disabledforeground=self.fgdis, 
+                        highlightbackground=self.bg, 
+                        highlightthickness=0, 
+                        relief='flat', 
+                        overrelief='flat',
+                        font='Arial 10 bold',
+                        command=lambda:self.run()
+                        ),
+                    'save': tkinter.Button(
+                        self.root, 
+                        text='SAVE AS', 
+                        state='disabled', 
+                        bg=self.bg, 
+                        fg=self.fg, 
+                        bd=0, 
+                        disabledforeground=self.fgdis, 
+                        highlightbackground=self.bg, 
+                        highlightthickness=0, 
+                        relief='flat', 
+                        overrelief='flat',
+                        font='Arial 10 bold',
+                        command=lambda:self.save_all()
+                        ),
+                    'import': tkinter.Button(
+                        self.root, 
+                        text='IMPORT', 
+                        background=self.bg, 
+                        fg=self.fg, 
+                        bd=0, 
+                        disabledforeground=self.fgdis, 
+                        highlightbackground=self.bg, 
+                        highlightthickness=0, 
+                        relief='flat', 
+                        overrelief='flat',
+                        font='Arial 10 bold',
+                        command=lambda:self.select_files()
+                        ),
                 }
 
         dpos = [35, 10] # x, y
 
         for bid, button in self.buttons.items():
             button.place(x=dpos[0], y=dpos[1])
-            dpos[0] += 213
+            dpos[0] += 220
 
         # Parameters/Options
 
@@ -91,12 +137,55 @@ class jpegzilla:
         self.cjpeg_parameters['-colorformat'].set('YUV 4:2:0')
 
         self.gui_options = {
-                'quality': tkinter.Scale(self.root, label='Image quality', orient='horizontal', length='200', variable=self.cjpeg_parameters['-quality']),
-                'smoothing': tkinter.Scale(self.root, label='Smoothing', orient='horizontal', length='200', variable=self.cjpeg_parameters['-smooth']),
-                'progressive': tkinter.Checkbutton(self.root, text='Progressive', variable=self.cjpeg_parameters['-progressive']),
-                'greyscale': tkinter.Checkbutton(self.root, text='Greyscale', variable=self.cjpeg_parameters['-greyscale']),
-                'arithmetic': tkinter.Checkbutton(self.root, text='Use arithmetic coding', variable=self.cjpeg_parameters['-arithmetic']),
-                'colorformat': tkinter.OptionMenu(self.root, self.cjpeg_parameters['-colorformat'], *['YUV 4:2:0', 'YUV 4:2:2', 'YUV 4:4:4', 'RGB'])
+                'quality': tkinter.Scale(
+                    self.root, label='Image quality', orient='horizontal', length='200', 
+                    bg=self.bg, fg=self.fg, 
+                    bd=0, 
+                    highlightbackground=self.bg, 
+                    highlightthickness=0, 
+                    relief='flat', 
+                    variable=self.cjpeg_parameters['-quality']
+                    ),
+                'smoothing': tkinter.Scale(
+                    self.root, label='Smoothing', orient='horizontal', length='200', 
+                    bg=self.bg, fg=self.fg, 
+                    bd=0, 
+                    highlightbackground=self.bg, 
+                    highlightthickness=0, 
+                    relief='flat', 
+                    variable=self.cjpeg_parameters['-smooth']
+                    ),
+                'progressive': tkinter.Checkbutton(
+                    self.root, text='Progressive',
+                    bg=self.bg, fg=self.fg,
+                    bd=0, 
+                    highlightbackground=self.bg, 
+                    highlightthickness=0, 
+                    relief='flat', 
+                    variable=self.cjpeg_parameters['-progressive']
+                    ),
+                'greyscale': tkinter.Checkbutton(
+                    self.root, text='Greyscale', 
+                    bg=self.bg, fg=self.fg,
+                    bd=0, 
+                    highlightbackground=self.bg, 
+                    highlightthickness=0, 
+                    relief='flat', 
+                    variable=self.cjpeg_parameters['-greyscale']
+                    ),
+                'arithmetic': tkinter.Checkbutton(
+                    self.root, text='Use arithmetic coding', 
+                    bg=self.bg, fg=self.fg,
+                    bd=0, 
+                    highlightbackground=self.bg, 
+                    highlightthickness=0, 
+                    relief='flat', 
+                    variable=self.cjpeg_parameters['-arithmetic']
+                    ),
+                'colorformat': tkinter.OptionMenu(
+                    self.root, 
+                    self.cjpeg_parameters['-colorformat'], *['YUV 4:2:0', 'YUV 4:2:2', 'YUV 4:4:4', 'RGB']
+                    )
                 }
 
         # - Set the defaults
@@ -114,13 +203,25 @@ class jpegzilla:
 
         # Queue/List
 
-        self.queue = tkinter.ttk.Frame(self.root)
+        self.queue = tkinter.Frame(self.root, bg=self.bg)
         self.queue.pack(side='bottom')
 
-        self.file_queue_rmdone = tkinter.Button(self.queue, text='Clear all saved', command=lambda:self.clean_completed())
+        self.file_queue_rmdone = tkinter.Button(
+                self.queue, text='CLEAR ALL   ', 
+                bg=self.bg, 
+                fg=self.fg, 
+                bd=0, 
+                disabledforeground=self.fgdis, 
+                highlightbackground=self.bg, 
+                highlightthickness=0, 
+                relief='flat', 
+                overrelief='flat',
+                font='Arial 9 bold',
+                command=lambda:self.clean_completed()
+                )
         self.file_queue_rmdone.pack(side='top', anchor='e')
 
-        self.queue_label = tkinter.Label(self.queue, text='Loaded files: 0')
+        self.queue_label = tkinter.Label(self.queue, bg=self.bg, fg=self.fg, text='Loaded files: 0')
         self.queue_label.pack(side='top', anchor='w')
 
         self.file_queue = tkinter.ttk.Treeview(self.queue, selectmode='browse')
@@ -195,9 +296,7 @@ class jpegzilla:
 
         all_files = self.file_queue.get_children()
         for image in all_files:
-            imginfo = self.file_queue.item(image)['values']
-            if (imginfo[1] == 'Completed'):
-                self.file_queue.delete(image)
+            self.file_queue.delete(image)
 
     def save_all(self):
 
@@ -245,6 +344,8 @@ class jpegzilla:
 
     def compress(self):
 
+        self.buttons['run'].configure(state='disabled')
+
         command = "cjpeg {targa} -outfile {filename}"
 
         for parameter, value in self.cjpeg_parameters.items():
@@ -286,6 +387,7 @@ class jpegzilla:
                 subprocess.Popen(c, shell=True, stdout=subprocess.PIPE).wait()
                 self.file_queue.item(entry, values=( entry_data[0] + ' -> ' + hurry.filesize.size(os.stat(TEMPDIR + img + extension).st_size), 'Completed', entry_data[2] ))
 
+        self.buttons['run'].configure(state='normal')
         self.buttons['save'].configure(state='normal')
 
 
