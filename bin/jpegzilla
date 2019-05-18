@@ -9,7 +9,7 @@ from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '0.5'
+VER = '0.5.1'
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
@@ -60,6 +60,8 @@ class jpegzilla:
         self.bg = '#FEFEFE' # Background color
         self.fg = '#000000' # Foreground color
         self.fgdis = '#555555' # Foreground color of disabled element
+
+        self.cancel_thread = False
 
         # Create root window.
         self.root = tkinter.Tk()
@@ -207,7 +209,8 @@ class jpegzilla:
         self.queue.pack(side='bottom')
 
         self.file_queue_rmdone = tkinter.Button(
-                self.queue, text='CLEAR ALL   ', 
+                self.queue,
+                text='CLEAR ALL', 
                 bg=self.bg, 
                 fg=self.fg, 
                 bd=0, 
@@ -217,9 +220,26 @@ class jpegzilla:
                 relief='flat', 
                 overrelief='flat',
                 font='Arial 9 bold',
-                command=lambda:self.clean_completed()
+                command=lambda:self.clean()
                 )
         self.file_queue_rmdone.pack(side='top', anchor='e')
+
+        self.cancel_button = tkinter.Button(
+                self.queue,
+                text='CANCEL',
+                state='disabled',
+                bg=self.bg,
+                fg=self.fg,
+                bd=0,
+                disabledforeground=self.fgdis,
+                highlightbackground=self.bg,
+                highlightthickness=0,
+                relief='flat',
+                overrelief='flat',
+                font='Arial 9 bold',
+                command=lambda:self.cancel()
+                )
+        self.cancel_button.pack(side='top', anchor='e')
 
         self.queue_label = tkinter.Label(self.queue, bg=self.bg, fg=self.fg, text='Loaded files: 0')
         self.queue_label.pack(side='top', anchor='w')
@@ -254,7 +274,11 @@ class jpegzilla:
         for image in selected_files:
             self.file_queue.delete(image)
 
-        self.queue_label.configure(text='Loaded files: {}'.format(str(len(self.file_queue.get_children()))))
+        self.queue_label.configure(text='Loaded files: {}'.format(
+            str(len(
+                self.file_queue.get_children()
+                ))
+            ))
         if not len(self.file_queue.get_children()):
             self.buttons['run'].config(state='disabled')
 
@@ -292,11 +316,15 @@ class jpegzilla:
         self.preview.image = self.preview_image
         self.preview.pack(fill='both', expand='yes')
 
-    def clean_completed(self):
+    def clean(self):
 
         all_files = self.file_queue.get_children()
         for image in all_files:
             self.file_queue.delete(image)
+
+        self.queue_label.configure(text='Loaded files: 0')
+        self.buttons['run'].configure(state='disabled')
+        self.buttons['save'].configure(state='disabled')
 
     def save_all(self):
 
@@ -342,9 +370,13 @@ class jpegzilla:
         self.compress_thread = threading.Thread(target=self.compress)
         self.compress_thread.start()
 
+    def cancel(self):
+        self.cancel_thread = True
+
     def compress(self):
 
         self.buttons['run'].configure(state='disabled')
+        self.cancel_button.configure(state='normal')
 
         command = "cjpeg {targa} -outfile {filename}"
 
@@ -387,8 +419,13 @@ class jpegzilla:
                 subprocess.Popen(c, shell=True, stdout=subprocess.PIPE).wait()
                 self.file_queue.item(entry, values=( entry_data[0] + ' -> ' + hurry.filesize.size(os.stat(TEMPDIR + img + extension).st_size), 'Completed', entry_data[2] ))
 
+            if self.cancel_thread:
+                self.cancel_thread = False
+                break
+
         self.buttons['run'].configure(state='normal')
         self.buttons['save'].configure(state='normal')
+        self.cancel_button.configure(state='disabled')
 
 
 

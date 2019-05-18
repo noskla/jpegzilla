@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
         name='jpegzilla',
-        version=0.5,
+        version=0.5.1,
         description='Lightweight, basic and easy to use MozJPEG frontend made in Tkinter',
         url='https://github.com/fabulouskana/jpegzilla',
         author='Jaroslaw "_kana" C.',
