@@ -21,6 +21,11 @@ class jpegzilla:
 
     def __init__(self):
 
+        # Colors
+        self.bg = '#FEFEFE' # Background color
+        self.fg = '#000000' # Foreground color
+        self.fgdis = '#555555' # Foreground color of disabled element
+
         first_run = False
 
         # Load locale file.
@@ -73,14 +78,35 @@ class jpegzilla:
             first_run_setup.geometry('300x180')
             first_run_setup.title('Jpegzilla - First run setup')
             first_run_setup.resizable(False, False)
+            first_run_setup.configure(bg=self.bg)
             first_run_setup.protocol('WM_DELETE_WINDOW', lambda:sys.exit())
+
             language = tkinter.StringVar(first_run_setup)
             language.set('Select a language')
 
-            first_run_setup_skip = tkinter.Button(first_run_setup, text='Skip setup (Will use defaults)', command=lambda:set_language('en_US', first_run_setup))
-            first_run_setup_done = tkinter.Button(first_run_setup, text='Accept settings', command=lambda:set_language(language.get(), first_run_setup))
+            first_run_setup_skip = tkinter.Button(
+                    first_run_setup,
+                    text='Skip setup (Will use defaults)',
+                    relief='flat',
+                    bg=self.bg,
+                    fg=self.fg,
+                    command=lambda:set_language('en_US', first_run_setup)
+                    )
+            first_run_setup_done = tkinter.Button(
+                    first_run_setup,
+                    text='Accept settings',
+                    relief='flat',
+                    bg=self.bg,
+                    fg=self.fg,
+                    command=lambda:set_language(language.get(), first_run_setup)
+                    )
             first_run_setup_lang = tkinter.OptionMenu(first_run_setup, language, *languages_list)
-            first_run_setup_text = tkinter.Label(first_run_setup, text='Thanks for using Jpegzilla!\nPlease choose a language you wanna use\nor click "SKIP".\n')
+            first_run_setup_text = tkinter.Label(
+                    first_run_setup,
+                    bg=self.bg,
+                    fg=self.fg,
+                    text='Thanks for using Jpegzilla!\nPlease choose a language you wanna use\nor click "SKIP".\n'
+                    )
 
             first_run_setup_text.pack()
             first_run_setup_lang.pack()
@@ -88,10 +114,6 @@ class jpegzilla:
             first_run_setup_done.pack(fill='x', side='bottom')
 
             first_run_setup.mainloop()
-
-            print('Loaded language: ' + self.locale['locale-name'])
-
-
 
         # Check if Mozjpeg is available.
         if OS == 'Windows':
@@ -130,10 +152,6 @@ class jpegzilla:
             if not os.path.isfile('/usr/bin/cjpeg') or not os.path.isfile('/bin/cjpeg'):
                 print(self.locale['mozjpeg-not-found-error'])
                 sys.exit()
-
-        self.bg = '#FEFEFE' # Background color
-        self.fg = '#000000' # Foreground color
-        self.fgdis = '#555555' # Foreground color of disabled element
 
         self.cancel_thread = False
 
@@ -338,7 +356,6 @@ class jpegzilla:
 
         self.file_queue.bind('<Delete>', lambda x:self.remove_files())
         self.file_queue.bind('<Return>', lambda x:self.show_preview())
-        self.root.bind('<Shift-E>', lambda x:subprocess.Popen(['start' if OS == 'Windows' else 'xdg-open', 'https://waa.ai/XxXN'], stdout=FNULL, stderr=subprocess.STDOUT))
 
         self.root.mainloop()
 

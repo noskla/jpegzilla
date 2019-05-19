@@ -18,7 +18,7 @@ yay mozjpeg # or pacaur -S aur/mozjpeg or yaourt mozjpeg
 # Download, install pip dependencies and run Jpegzilla.
 git clone https://github.com/fabulouskana/jpegzilla
 sudo -H pip install -r jpegzilla/requirements.txt
-python jpegzilla/jz.py
+python jpegzilla/jpegzilla.py
 # Done.
 ```
 
@@ -38,7 +38,7 @@ sudo ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/mozjpeg
 # Download, install pip requirements and run Jpegzilla.
 git clone https://github.com/fabulouskana/jpegzilla
 sudo -H python3 -m pip install -r jpegzilla/requirements.txt
-python3 jpegzilla/jz.py
+python3 jpegzilla/jpegzilla.py
 ```
 #### Windows
 
@@ -49,7 +49,7 @@ python3 jpegzilla/jz.py
 - Download this repository, unpack it in new directory and open cmd.exe in it.
 - [Download the MozJPEG binary](https://mozjpeg.codelove.de/binaries.html) or [compile it for your own](https://github.com/mozilla/mozjpeg).
 - Put the cjpeg.exe and all required dll libraries in the Jpegzilla directory.
-- You should be able to run Jpegzilla with ``python jz.py``, ``py jz.py`` or even by double-clicking the jz.py file.
+- You should be able to run Jpegzilla with ``python jpegzilla.py``, ``py jpegzilla.py`` or even by double-clicking the jpegzilla.py file.
 
 ###### Windows XP
 ---
