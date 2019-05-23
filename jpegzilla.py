@@ -56,6 +56,9 @@ class jpegzilla:
 
             def set_language(lang, setup_window):
 
+                if lang == 'Select a language':
+                    return
+
                 with open(locale_path + lang + '.json', 'r') as f:
                     self.locale = json.load(f)
                     f.close()
