@@ -28,8 +28,14 @@ class jpegzilla:
 
         first_run = False
 
+        # Get current file.
+        if (getattr(sys, 'frozen', False)):
+            _thisfile = sys.executable
+        else:
+            _thisfile = __file__
+
         # Load locale file.
-        locale_path = os.path.dirname(os.path.abspath(__file__).replace('\\', '/')) + '/locale/'
+        locale_path = os.path.dirname(os.path.abspath(_thisfile).replace('\\', '/')) + '/locale/'
 
         try:
             with open(locale_path + 'locale.txt', 'r') as f:
