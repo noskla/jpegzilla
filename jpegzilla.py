@@ -51,8 +51,8 @@ class jpegzilla:
         if not first_run:
 
             if not os.path.isfile(locale_path + locale_code + '.json'):
-                print('Locale with given language code doesn\'t exist. Fallback to en_US...')
-                locale_code = 'en_US'
+                print('Locale with given language code doesn\'t exist. Fallback to English...')
+                locale_code = 'English'
 
             with open(locale_path + locale_code + '.json', 'r') as f:
                 self.locale = json.load(f)
@@ -76,7 +76,7 @@ class jpegzilla:
                 setup_window.destroy()
 
 
-            raw_languages_list = os.listdir(locale_path)
+            raw_languages_list = sorted(os.listdir(locale_path))
             languages_list = []
 
             for lang in raw_languages_list:
@@ -99,7 +99,7 @@ class jpegzilla:
                     relief='flat',
                     bg=self.bg,
                     fg=self.fg,
-                    command=lambda:set_language('en_US', first_run_setup)
+                    command=lambda:set_language('English', first_run_setup)
                     )
             first_run_setup_done = tkinter.Button(
                     first_run_setup,
