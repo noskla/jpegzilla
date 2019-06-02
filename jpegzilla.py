@@ -160,7 +160,7 @@ class jpegzilla:
 
         else:
 
-            if not os.path.isfile('/usr/bin/cjpeg') or os.path.isfile('/opt/mozjpeg/cjpeg'):
+            if not os.path.isfile('/usr/bin/cjpeg') or not os.path.isfile('/opt/mozjpeg/cjpeg'):
                 print(self.locale['mozjpeg-not-found-error'])
                 messagebox.showerror(self.locale['title-error'], self.locale['mozjpeg-not-found-error'])
                 sys.exit()
