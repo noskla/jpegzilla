@@ -7,11 +7,12 @@ import sys, ntpath, os, subprocess, threading, json
 import hurry.filesize, platform, shutil, glob
 import tkinter, tkinter.ttk, tkinter.filedialog
 
+from tkinter import messagebox
 from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '0.6.0'
+VER = '0.7.0'
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
@@ -152,14 +153,16 @@ class jpegzilla:
 
                 if not mozjpeg_found:
                     print(self.locale['mozjpeg-not-found-error'])
+                    messagebox.showerror(self.locale['title-error'], self.locale['mozjpeg-not-found-error'])
                     sys.exit()
 
 
 
         else:
 
-            if not os.path.isfile('/usr/bin/cjpeg') or not os.path.isfile('/bin/cjpeg'):
+            if not os.path.isfile('/usr/bin/cjpeg') or os.path.isfile('/opt/mozjpeg/cjpeg'):
                 print(self.locale['mozjpeg-not-found-error'])
+                messagebox.showerror(self.locale['title-error'], self.locale['mozjpeg-not-found-error'])
                 sys.exit()
 
         self.cancel_thread = False

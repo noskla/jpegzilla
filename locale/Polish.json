@@ -14,6 +14,7 @@
 	"image-preview-title": "Pogląd obrazu - {filename}",
 	"save-all-title": "Wybierz katalog do którego zapisać skompresowane pliki...",
 	"select-files-title": "Wybierz pliki do importu...",
+	"title-error": "Jpegzilla - Błąd",
 
 	"": "-- TOP BUTTONS --",
 	"run-button": "KOMPRESUJ",
