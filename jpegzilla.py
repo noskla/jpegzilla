@@ -12,7 +12,7 @@ from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '0.8.0'
+VER = '0.8.1'
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
@@ -247,8 +247,11 @@ class jpegzilla:
 
         self.cjpeg_parameters['-colorformat'].set('YUV 4:2:0')
         def uncheck_progressive():
-            if self.cjpeg_parameters['-optimize'].get():
+            if self.cjpeg_parameters['-progressive'].get() or self.gui_options['progressive']['state'] == 'normal':
                 self.cjpeg_parameters['-progressive'].set(0)
+                self.gui_options['progressive'].configure(state='disabled')
+            else:
+                self.gui_options['progressive'].configure(state='normal')
 
         self.gui_options = {
                 'quality': tkinter.Scale(
