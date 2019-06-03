@@ -27,6 +27,8 @@ class jpegzilla:
         self.fg = '#000000' # Foreground color
         self.fgdis = '#555555' # Foreground color of disabled element
 
+        self.debug = False
+
         first_run = False
 
         # Get current file.
@@ -160,7 +162,7 @@ class jpegzilla:
 
         else:
 
-            if not os.path.isfile('/usr/bin/cjpeg') or not os.path.isfile('/opt/mozjpeg/cjpeg'):
+            if not os.path.isfile('/usr/bin/cjpeg') and not os.path.isfile('/opt/mozjpeg/cjpeg'):
                 print(self.locale['mozjpeg-not-found-error'])
                 messagebox.showerror(self.locale['title-error'], self.locale['mozjpeg-not-found-error'])
                 sys.exit()
@@ -237,7 +239,10 @@ class jpegzilla:
                 '-progressive': tkinter.IntVar(),
                 '-greyscale': tkinter.IntVar(),
                 '-arithmetic': tkinter.IntVar(),
-                '-colorformat': tkinter.StringVar(self.root)
+                '-colorformat': tkinter.StringVar(self.root),
+                '-optimize': tkinter.IntVar(),
+                '-baseline': tkinter.IntVar(),
+                '-notrellis': tkinter.IntVar()
                 }
 
         self.cjpeg_parameters['-colorformat'].set('YUV 4:2:0')
@@ -291,12 +296,40 @@ class jpegzilla:
                 'colorformat': tkinter.OptionMenu(
                     self.root, 
                     self.cjpeg_parameters['-colorformat'], *['YUV 4:2:0', 'YUV 4:2:2', 'YUV 4:4:4', 'RGB']
+                    ),
+                'optimize': tkinter.Checkbutton(
+                    self.root, text=self.locale['optimize'],
+                    bg=self.bg, fg=self.fg,
+                    bd=0,
+                    highlightbackground=self.bg,
+                    highlightthickness=0,
+                    relief='flat',
+                    variable=self.cjpeg_parameters['-optimize']
+                    ),
+                 'baseline': tkinter.Checkbutton(
+                    self.root, text=self.locale['baseline'],
+                    bg=self.bg, fg=self.fg,
+                    bd=0,
+                    highlightbackground=self.bg,
+                    highlightthickness=0,
+                    relief='flat',
+                    variable=self.cjpeg_parameters['-baseline']
+                    ),
+                 'notrellis': tkinter.Checkbutton(
+                    self.root, text=self.locale['notrellis'],
+                    bg=self.bg, fg=self.fg,
+                    bd=0,
+                    highlightbackground=self.fg,
+                    highlightthickness=0,
+                    relief='flat',
+                    variable=self.cjpeg_parameters['-notrellis']
                     )
                 }
 
         # - Set the defaults
         self.gui_options['progressive'].select()
         self.gui_options['quality'].set(90)
+        self.gui_options['optimize'].select()
 
         # - Place items
         self.gui_options['quality'].place(x=10, y=45)
@@ -305,6 +338,9 @@ class jpegzilla:
         self.gui_options['greyscale'].place(x=220, y=90)
         self.gui_options['arithmetic'].place(x=220, y=110)
         self.gui_options['colorformat'].place(x=225, y=130)
+        self.gui_options['optimize'].place(x=400, y=70)
+        self.gui_options['baseline'].place(x=400, y=90)
+        self.gui_options['notrellis'].place(x=400, y=140)
 
 
         # Queue/List
@@ -517,6 +553,9 @@ class jpegzilla:
                 self.file_queue.item(entry, values=( entry_data[0], self.locale['status-running'], entry_data[2] ))
 
                 c = (command.format(filename=(TEMPDIR + img + extension), targa=('-targa' if extension == '.tga' else '')) + ' ' + entry_data[2])
+
+                if self.debug:
+                    print(c)
 
                 subprocess.Popen(c, shell=True, stdout=subprocess.PIPE).wait()
                 self.file_queue.item(entry, values=( entry_data[0] + ' -> ' + hurry.filesize.size(os.stat(TEMPDIR + img + extension).st_size), self.locale['status-completed'], entry_data[2] ))
