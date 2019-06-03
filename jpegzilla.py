@@ -7,11 +7,12 @@ import sys, ntpath, os, subprocess, threading, json
 import hurry.filesize, platform, shutil, glob
 import tkinter, tkinter.ttk, tkinter.filedialog
 
+from tkinter import messagebox
 from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '0.6.0'
+VER = '0.9'
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
@@ -26,10 +27,18 @@ class jpegzilla:
         self.fg = '#000000' # Foreground color
         self.fgdis = '#555555' # Foreground color of disabled element
 
+        self.debug = False
+
         first_run = False
 
+        # Get current file.
+        if (getattr(sys, 'frozen', False)):
+            _thisfile = sys.executable
+        else:
+            _thisfile = __file__
+
         # Load locale file.
-        locale_path = os.path.dirname(os.path.abspath(__file__).replace('\\', '/')) + '/locale/'
+        locale_path = os.path.dirname(os.path.abspath(_thisfile).replace('\\', '/')) + '/locale/'
 
         try:
             with open(locale_path + 'locale.txt', 'r') as f:
@@ -45,8 +54,8 @@ class jpegzilla:
         if not first_run:
 
             if not os.path.isfile(locale_path + locale_code + '.json'):
-                print('Locale with given language code doesn\'t exist. Fallback to en_US...')
-                locale_code = 'en_US'
+                print('Locale with given language code doesn\'t exist. Fallback to English...')
+                locale_code = 'English'
 
             with open(locale_path + locale_code + '.json', 'r') as f:
                 self.locale = json.load(f)
@@ -70,7 +79,7 @@ class jpegzilla:
                 setup_window.destroy()
 
 
-            raw_languages_list = os.listdir(locale_path)
+            raw_languages_list = sorted(os.listdir(locale_path))
             languages_list = []
 
             for lang in raw_languages_list:
@@ -93,7 +102,7 @@ class jpegzilla:
                     relief='flat',
                     bg=self.bg,
                     fg=self.fg,
-                    command=lambda:set_language('en_US', first_run_setup)
+                    command=lambda:set_language('English', first_run_setup)
                     )
             first_run_setup_done = tkinter.Button(
                     first_run_setup,
@@ -123,8 +132,10 @@ class jpegzilla:
 
             win_paths = os.getenv('PATH').split(';')
 
-            if os.path.isfile('./cjpeg.exe') and glob.glob('./libjpeg-*.dll'):
+            if os.path.isfile('./cjpeg.exe'):
                 print(self.locale['mozjpeg-found-local-dir'])
+                if not glob.glob('./libjpeg-*.dll'):
+                    messagebox.showerror(self.locale['title-error'], self.locale['mozjpeg-dll-missing-error'])
                 pass
 
             elif os.path.isfile('./jpegzilla-mozjpeg_in_path'):
@@ -146,14 +157,16 @@ class jpegzilla:
 
                 if not mozjpeg_found:
                     print(self.locale['mozjpeg-not-found-error'])
+                    messagebox.showerror(self.locale['title-error'], self.locale['mozjpeg-not-found-error'])
                     sys.exit()
 
 
 
         else:
 
-            if not os.path.isfile('/usr/bin/cjpeg') or not os.path.isfile('/bin/cjpeg'):
+            if not os.path.isfile('/usr/bin/cjpeg') and not os.path.isfile('/opt/mozjpeg/cjpeg'):
                 print(self.locale['mozjpeg-not-found-error'])
+                messagebox.showerror(self.locale['title-error'], self.locale['mozjpeg-not-found-error'])
                 sys.exit()
 
         self.cancel_thread = False
@@ -228,10 +241,19 @@ class jpegzilla:
                 '-progressive': tkinter.IntVar(),
                 '-greyscale': tkinter.IntVar(),
                 '-arithmetic': tkinter.IntVar(),
-                '-colorformat': tkinter.StringVar(self.root)
+                '-colorformat': tkinter.StringVar(self.root),
+                '-optimize': tkinter.IntVar(),
+                '-baseline': tkinter.IntVar(),
+                '-notrellis': tkinter.IntVar()
                 }
 
         self.cjpeg_parameters['-colorformat'].set('YUV 4:2:0')
+        def uncheck_progressive():
+            if self.cjpeg_parameters['-progressive'].get() or self.gui_options['progressive']['state'] == 'normal':
+                self.cjpeg_parameters['-progressive'].set(0)
+                self.gui_options['progressive'].configure(state='disabled')
+            else:
+                self.gui_options['progressive'].configure(state='normal')
 
         self.gui_options = {
                 'quality': tkinter.Scale(
@@ -282,12 +304,41 @@ class jpegzilla:
                 'colorformat': tkinter.OptionMenu(
                     self.root, 
                     self.cjpeg_parameters['-colorformat'], *['YUV 4:2:0', 'YUV 4:2:2', 'YUV 4:4:4', 'RGB']
+                    ),
+                'optimize': tkinter.Checkbutton(
+                    self.root, text=self.locale['optimize'],
+                    bg=self.bg, fg=self.fg,
+                    bd=0,
+                    highlightbackground=self.bg,
+                    highlightthickness=0,
+                    relief='flat',
+                    variable=self.cjpeg_parameters['-optimize'],
+                    ),
+                 'baseline': tkinter.Checkbutton(
+                    self.root, text=self.locale['baseline'],
+                    bg=self.bg, fg=self.fg,
+                    bd=0,
+                    highlightbackground=self.bg,
+                    highlightthickness=0,
+                    relief='flat',
+                    variable=self.cjpeg_parameters['-baseline'],
+                    command=lambda:uncheck_progressive()
+                    ),
+                 'notrellis': tkinter.Checkbutton(
+                    self.root, text=self.locale['notrellis'],
+                    bg=self.bg, fg=self.fg,
+                    bd=0,
+                    highlightbackground=self.fg,
+                    highlightthickness=0,
+                    relief='flat',
+                    variable=self.cjpeg_parameters['-notrellis']
                     )
                 }
 
         # - Set the defaults
         self.gui_options['progressive'].select()
         self.gui_options['quality'].set(90)
+        self.gui_options['optimize'].select()
 
         # - Place items
         self.gui_options['quality'].place(x=10, y=45)
@@ -296,7 +347,9 @@ class jpegzilla:
         self.gui_options['greyscale'].place(x=220, y=90)
         self.gui_options['arithmetic'].place(x=220, y=110)
         self.gui_options['colorformat'].place(x=225, y=130)
-
+        self.gui_options['optimize'].place(x=400, y=70)
+        self.gui_options['baseline'].place(x=400, y=90)
+        self.gui_options['notrellis'].place(x=400, y=125)
 
         # Queue/List
 
@@ -380,10 +433,13 @@ class jpegzilla:
     def show_preview(self):
     
         selected_file = self.file_queue.item(self.file_queue.selection())['values']
-        filename = ntpath.basename(selected_file[2])
+        try:
+            file_name = ntpath.basename(selected_file[2])
+        except IndexError:
+            return
 
         self.preview_window = tkinter.Toplevel(self.root)
-        self.preview_window.title(self.locale['image-preview-title'].format(filename))
+        self.preview_window.title(self.locale['image-preview-title'].format(filename=file_name))
 
         # Open in image viewer
         oiiv_button = tkinter.Button(
@@ -508,6 +564,9 @@ class jpegzilla:
                 self.file_queue.item(entry, values=( entry_data[0], self.locale['status-running'], entry_data[2] ))
 
                 c = (command.format(filename=(TEMPDIR + img + extension), targa=('-targa' if extension == '.tga' else '')) + ' ' + entry_data[2])
+
+                if self.debug:
+                    print(c)
 
                 subprocess.Popen(c, shell=True, stdout=subprocess.PIPE).wait()
                 self.file_queue.item(entry, values=( entry_data[0] + ' -> ' + hurry.filesize.size(os.stat(TEMPDIR + img + extension).st_size), self.locale['status-completed'], entry_data[2] ))
