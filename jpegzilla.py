@@ -12,7 +12,7 @@ from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '0.8.1'
+VER = '0.9'
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
@@ -132,8 +132,10 @@ class jpegzilla:
 
             win_paths = os.getenv('PATH').split(';')
 
-            if os.path.isfile('./cjpeg.exe') and glob.glob('./libjpeg-*.dll'):
+            if os.path.isfile('./cjpeg.exe'):
                 print(self.locale['mozjpeg-found-local-dir'])
+                if not glob.glob('./libjpeg-*.dll'):
+                    messagebox.showerror(self.locale['title-error'], self.locale['mozjpeg-dll-missing-error'])
                 pass
 
             elif os.path.isfile('./jpegzilla-mozjpeg_in_path'):
@@ -347,7 +349,7 @@ class jpegzilla:
         self.gui_options['colorformat'].place(x=225, y=130)
         self.gui_options['optimize'].place(x=400, y=70)
         self.gui_options['baseline'].place(x=400, y=90)
-        self.gui_options['notrellis'].place(x=400, y=140)
+        self.gui_options['notrellis'].place(x=400, y=125)
 
         # Queue/List
 
@@ -431,10 +433,13 @@ class jpegzilla:
     def show_preview(self):
     
         selected_file = self.file_queue.item(self.file_queue.selection())['values']
-        filename = ntpath.basename(selected_file[2])
+        try:
+            file_name = ntpath.basename(selected_file[2])
+        except IndexError:
+            return
 
         self.preview_window = tkinter.Toplevel(self.root)
-        self.preview_window.title(self.locale['image-preview-title'].format(filename))
+        self.preview_window.title(self.locale['image-preview-title'].format(filename=file_name))
 
         # Open in image viewer
         oiiv_button = tkinter.Button(
