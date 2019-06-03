@@ -12,7 +12,7 @@ from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '0.7.0'
+VER = '0.8.0'
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
@@ -246,6 +246,9 @@ class jpegzilla:
                 }
 
         self.cjpeg_parameters['-colorformat'].set('YUV 4:2:0')
+        def uncheck_progressive():
+            if self.cjpeg_parameters['-optimize'].get():
+                self.cjpeg_parameters['-progressive'].set(0)
 
         self.gui_options = {
                 'quality': tkinter.Scale(
@@ -304,7 +307,7 @@ class jpegzilla:
                     highlightbackground=self.bg,
                     highlightthickness=0,
                     relief='flat',
-                    variable=self.cjpeg_parameters['-optimize']
+                    variable=self.cjpeg_parameters['-optimize'],
                     ),
                  'baseline': tkinter.Checkbutton(
                     self.root, text=self.locale['baseline'],
@@ -313,7 +316,8 @@ class jpegzilla:
                     highlightbackground=self.bg,
                     highlightthickness=0,
                     relief='flat',
-                    variable=self.cjpeg_parameters['-baseline']
+                    variable=self.cjpeg_parameters['-baseline'],
+                    command=lambda:uncheck_progressive()
                     ),
                  'notrellis': tkinter.Checkbutton(
                     self.root, text=self.locale['notrellis'],
@@ -341,7 +345,6 @@ class jpegzilla:
         self.gui_options['optimize'].place(x=400, y=70)
         self.gui_options['baseline'].place(x=400, y=90)
         self.gui_options['notrellis'].place(x=400, y=140)
-
 
         # Queue/List
 

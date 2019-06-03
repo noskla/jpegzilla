@@ -28,7 +28,7 @@
 	"greyscale": "Greyscale",
 	"arithmetic": "Use arithmetic coding",
 	"optimize": "Optimize",
-	"baseline": "Baseline (ignores \n\"Progressive\" when\n checked)",
+	"baseline": "Baseline                       \n(unchecks Progressive)",
 	"notrellis": "Disable trellis optimalization",
 
 	"": "-- QUEUE --",
