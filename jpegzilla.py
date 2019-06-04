@@ -4,7 +4,7 @@
 # https://github.com/fabulouskana/jpegzilla
 
 import sys, ntpath, os, subprocess, threading, json
-import platform, shutil, glob
+import math, platform, shutil, glob
 import tkinter, tkinter.ttk, tkinter.filedialog
 
 from tkinter import messagebox
@@ -581,7 +581,7 @@ class jpegzilla:
         self.buttons['save'].configure(state='normal')
         self.cancel_button.configure(state='disabled')
 
-    def convert_size(size_bytes):
+    def convert_size(self, size_bytes):
         if size_bytes == 0:
             return "0B"
         size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
