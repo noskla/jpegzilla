@@ -30,7 +30,7 @@ else:
 setup(
         
     name = 'Jpegzilla',
-    version = '0.999',
+    version = '1.0',
     options = {
         'build_exe': {
             'include_files': include_files,

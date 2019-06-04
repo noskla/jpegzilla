@@ -12,7 +12,7 @@ from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '0.999'
+VER = '1.0'
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
@@ -257,6 +257,13 @@ class jpegzilla:
             else:
                 self.gui_options['progressive'].configure(state='normal')
 
+        def uncheck_optimize():
+            if self.cjpeg_parameters['-optimize'].get() or self.gui_options['optimize']['state'] == 'normal':
+                self.cjpeg_parameters['-optimize'].set(0)
+                self.gui_options['optimize'].configure(state='disabled')
+            else:
+                self.gui_options['optimize'].configure(state='normal')
+
         self.gui_options = {
                 'quality': tkinter.Scale(
                     self.root, label=self.locale['image-quality'], orient='horizontal', length='200', 
@@ -301,7 +308,8 @@ class jpegzilla:
                     highlightbackground=self.bg, 
                     highlightthickness=0, 
                     relief='flat', 
-                    variable=self.cjpeg_parameters['-arithmetic']
+                    variable=self.cjpeg_parameters['-arithmetic'],
+                    command=lambda:uncheck_optimize()
                     ),
                 'colorformat': tkinter.OptionMenu(
                     self.root, 
