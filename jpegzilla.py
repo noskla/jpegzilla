@@ -4,7 +4,7 @@
 # https://github.com/fabulouskana/jpegzilla
 
 import sys, ntpath, os, subprocess, threading, json
-import hurry.filesize, platform, shutil, glob
+import platform, shutil, glob
 import tkinter, tkinter.ttk, tkinter.filedialog
 
 from tkinter import messagebox
@@ -12,7 +12,7 @@ from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '0.99'
+VER = '0.999'
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
@@ -505,7 +505,7 @@ class jpegzilla:
     
         for image in self.filenames:
             
-            filesize = hurry.filesize.size(os.stat(image).st_size)
+            filesize = self.convert_size(os.stat(image).st_size)
 
             self.file_queue.insert('', 'end', text=ntpath.basename(image), values=(
                      filesize, self.locale['status-new'], image
@@ -571,7 +571,7 @@ class jpegzilla:
                     print(c)
 
                 subprocess.Popen(c, shell=True, stdout=subprocess.PIPE).wait()
-                self.file_queue.item(entry, values=( entry_data[0] + ' -> ' + hurry.filesize.size(os.stat(TEMPDIR + img + extension).st_size), self.locale['status-completed'], entry_data[2] ))
+                self.file_queue.item(entry, values=( entry_data[0] + ' -> ' + self.convert_size(os.stat(TEMPDIR + img + extension).st_size), self.locale['status-completed'], entry_data[2] ))
 
             if self.cancel_thread:
                 self.cancel_thread = False
@@ -581,7 +581,14 @@ class jpegzilla:
         self.buttons['save'].configure(state='normal')
         self.cancel_button.configure(state='disabled')
 
-
+    def convert_size(size_bytes):
+        if size_bytes == 0:
+            return "0B"
+        size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+        i = int(math.floor(math.log(size_bytes, 1024)))
+        p = math.pow(1024, i)
+        s = round(size_bytes / p, 2)
+        return "%s %s" % (s, size_name[i])
 
 if __name__ == '__main__':
     

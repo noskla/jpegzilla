@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import os
+import os, sys
 
 try:
     from cx_Freeze import setup, Executable
@@ -30,14 +30,13 @@ else:
 setup(
         
     name = 'Jpegzilla',
-    version = '0.99',
+    version = '0.999',
     options = {
         'build_exe': {
             'include_files': include_files,
             'packages': [
-                'hurry.filesize', 'glob', 'sys',
-                'threading','shutil', 'platform',
-                'ntpath', 'subprocess', 'PIL'
+                'glob', 'sys', 'threading', 'shutil',
+                'platform', 'ntpath', 'subprocess', 'PIL'
                 ],
             'includes': ['tkinter']
             }
