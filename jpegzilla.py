@@ -12,7 +12,7 @@ from PIL import Image, ImageTk
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '0.9'
+VER = '0.99'
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
@@ -37,8 +37,10 @@ class jpegzilla:
         else:
             _thisfile = __file__
 
-        # Load locale file.
+        # Get important dir paths.
         locale_path = os.path.dirname(os.path.abspath(_thisfile).replace('\\', '/')) + '/locale/'
+
+        # Load locale file.
 
         try:
             with open(locale_path + 'locale.txt', 'r') as f:
