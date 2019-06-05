@@ -51,14 +51,7 @@
 	},
 
 	"": "-- PREVIEW --",
-	"open-in-image-viewer": "Open in system default Image Viewer",
-
-	"": "-- CLI --",
-	"version-info": "Jpegzilla {version}\nhttps://github.com/fabulouskana/jpegzilla",
-	"help-info": "Run program by just typing \"jpegzilla\" or by running script without any arguments.\n    -v, --version  - Display version information.",
-	"unknown-argument": "Unknown argument. Type --help for more information."
-
-
+	"open-in-image-viewer": "Open in system default Image Viewer"
 
 }
 

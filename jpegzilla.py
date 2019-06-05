@@ -231,7 +231,7 @@ class jpegzilla:
 
         dpos = [35, 10] # x, y
 
-        for bid, button in self.buttons.items():
+        for _, button in self.buttons.items():
             button.place(x=dpos[0], y=dpos[1])
             dpos[0] += 220
 
@@ -458,12 +458,12 @@ class jpegzilla:
                 text=self.locale['open-in-image-viewer'],
                 command=lambda:subprocess.Popen([
                     'start' if OS == 'Windows' else 'xdg-open',
-                    TEMPDIR + filename if selected_file[1] == self.locale['status-completed'] else selected_file[2]
+                    TEMPDIR + file_name if selected_file[1] == self.locale['status-completed'] else selected_file[2]
                     ])
                 )
         oiiv_button.pack()
 
-        self.preview_imgfile = Image.open( TEMPDIR + filename if selected_file[1] == self.locale['status-completed'] else selected_file[2] )
+        self.preview_imgfile = Image.open( TEMPDIR + file_name if selected_file[1] == self.locale['status-completed'] else selected_file[2] )
 
         required_width = 800
         wpercent = (required_width / float(self.preview_imgfile.size[0]) )
@@ -604,12 +604,18 @@ if __name__ == '__main__':
         if sys.argv[1].startswith('-'):
 
             if sys.argv[1] in ['-v', '--version']:
-                print(self.locale['version-info'].format(VER))
+
+                print("Jpegzilla {}\nhttps://github.com/fabulouskana/jpegzilla".format(VER))
+
             elif sys.argv[1] in ['-h', '--help']:
-                print(self.locale['help-info'])
+
+                print("Run program by just typing \"jpegzilla\" or by running script without any arguments.")
+                print("      -v, --version  - Display version information.")
+
             else:
-                print(self.locale['unknown-argument'])
-    
+
+                print("Unknown argument. Type --help for more information.")
+
         else:
             raise IndexError
 
