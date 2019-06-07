@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 # Jpegzilla
 # A simple, cross-platform and lightweight graphical user interface for MozJPEG.
 # https://github.com/fabulouskana/jpegzilla
@@ -419,9 +420,9 @@ class jpegzilla:
 
         self.file_queue.configure(yscrollcommand=self.file_queue_vsb.set)
 
-
         self.file_queue.bind('<Delete>', lambda x:self.remove_files())
         self.file_queue.bind('<Return>', lambda x:self.show_preview())
+        self.file_queue.bind('<Double-Button-1>', lambda x:self.show_preview())
 
         self.root.mainloop()
 
@@ -459,7 +460,7 @@ class jpegzilla:
                 command=lambda:subprocess.Popen([
                     'start' if OS == 'Windows' else 'xdg-open',
                     TEMPDIR + file_name if selected_file[1] == self.locale['status-completed'] else selected_file[2]
-                    ])
+                    ], stdout=FNULL, stderr=subprocess.STDOUT)
                 )
         oiiv_button.pack()
 
@@ -510,7 +511,8 @@ class jpegzilla:
                     )
                 )
         self.filenames = self.root.tk.splitlist(filenames)
-    
+
+
         for image in self.filenames:
             
             filesize = self.convert_size(os.stat(image).st_size)
@@ -616,9 +618,12 @@ if __name__ == '__main__':
 
                 print("Unknown argument. Type --help for more information.")
 
+            sys.exit()
+
         else:
             raise IndexError
 
     except IndexError:
-        jz = jpegzilla()
+        pass
 
+    jz = jpegzilla()
