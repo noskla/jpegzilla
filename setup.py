@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os, sys
+from conf import VER
 
 try:
     from cx_Freeze import setup, Executable
@@ -30,7 +31,7 @@ else:
 setup(
         
     name = 'Jpegzilla',
-    version = '1.0',
+    version = VER,
     options = {
         'build_exe': {
             'include_files': include_files,

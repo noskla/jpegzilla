@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Jpegzilla
 # A simple, cross-platform and lightweight graphical user interface for MozJPEG.
-# https://github.com/fabulouskana/jpegzilla
+# https://github.com/canimar/jpegzilla
 
 import sys, ntpath, os, subprocess, threading, json
 import math, platform, shutil, glob
@@ -11,13 +11,7 @@ import tkinter, tkinter.ttk, tkinter.filedialog
 from tkinter import messagebox
 from PIL import Image, ImageTk
 
-FNULL = open(os.devnull, 'w')
-OS = platform.system()
-VER = '1.0'
-
-TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
-if not os.path.exists(TEMPDIR):
-    os.mkdir(TEMPDIR)
+from conf import *
 
 class jpegzilla:
 
@@ -66,7 +60,7 @@ class jpegzilla:
         
         else:
 
-            def set_language(lang, setup_window):
+            def set_settings(lang, setup_window):
 
                 if lang == 'Select a language':
                     return
@@ -78,7 +72,7 @@ class jpegzilla:
                 with open(locale_path + 'locale.txt', 'w') as f:
                     f.write(lang)
                     f.close()
-
+                
                 setup_window.destroy()
 
 
@@ -105,7 +99,7 @@ class jpegzilla:
                     relief='flat',
                     bg=self.bg,
                     fg=self.fg,
-                    command=lambda:set_language('English', first_run_setup)
+                    command=lambda:set_settings('English', first_run_setup)
                     )
             first_run_setup_done = tkinter.Button(
                     first_run_setup,
@@ -113,7 +107,7 @@ class jpegzilla:
                     relief='flat',
                     bg=self.bg,
                     fg=self.fg,
-                    command=lambda:set_language(language.get(), first_run_setup)
+                    command=lambda:set_settings(language.get(), first_run_setup)
                     )
             first_run_setup_lang = tkinter.OptionMenu(first_run_setup, language, *languages_list)
             first_run_setup_text = tkinter.Label(
