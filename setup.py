@@ -37,7 +37,7 @@ setup(
             'include_files': include_files,
             'packages': [
                 'glob', 'sys', 'threading', 'shutil',
-                'platform', 'ntpath', 'subprocess', 'PIL'
+                'platform', 'ntpath', 'subprocess', 'PIL', 're'
                 ],
             'includes': ['tkinter']
             }

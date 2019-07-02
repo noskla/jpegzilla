@@ -5,8 +5,10 @@
 # https://github.com/canimar/jpegzilla
 
 import sys, ntpath, os, subprocess, threading, json
-import math, platform, shutil, glob
+import math, platform, shutil, glob, re
 import tkinter, tkinter.ttk, tkinter.filedialog
+
+import webbrowser
 
 from tkinter import messagebox
 from PIL import Image, ImageTk
@@ -22,7 +24,7 @@ class jpegzilla:
         self.fg = '#000000' # Foreground color
         self.fgdis = '#555555' # Foreground color of disabled element
 
-        self.debug = False
+        self.debug = True
 
         first_run = False
 
@@ -144,7 +146,8 @@ class jpegzilla:
                 mozjpeg_found = False
 
                 for path in win_paths:
-                    if os.path.isfile(path.replace('\\', '/') + ('/' if path[-1:] == '' else '') + 'cjpeg.exe' ):
+                    path = path.replace('\\', '/') + ('/' if path[-1:] == '' else '')
+                    if os.path.isfile(path + 'cjpeg.exe' ) and os.path.isfile(path + 'jpegtran.exe'):
                         print(self.locale['mozjpeg-found-path'].format(path=path))
                         mozjpeg_found = True
                         f = open('./jpegzilla-mozjpeg_in_path', 'w')
@@ -170,7 +173,7 @@ class jpegzilla:
 
         # Create root window.
         self.root = tkinter.Tk()
-        self.root.geometry('600x450')
+        self.root.geometry('780x550')
         self.root.title(self.locale['window-title'])
         self.root.resizable(False, False)
         self.root.configure(background=self.bg)
@@ -208,6 +211,20 @@ class jpegzilla:
                         font='Arial 10 bold',
                         command=lambda:self.save_all()
                         ),
+                    'help': tkinter.Button(
+                        self.root, 
+                        text=self.locale['help-button'], 
+                        background=self.bg, 
+                        fg=self.fg, 
+                        bd=0, 
+                        disabledforeground=self.fgdis, 
+                        highlightbackground=self.bg, 
+                        highlightthickness=0, 
+                        relief='flat', 
+                        overrelief='flat',
+                        font='Arial 10 bold',
+                        command=lambda:webbrowser.open_new(DOCS_URL)
+                        ),
                     'import': tkinter.Button(
                         self.root, 
                         text=self.locale['import-button'], 
@@ -221,14 +238,14 @@ class jpegzilla:
                         overrelief='flat',
                         font='Arial 10 bold',
                         command=lambda:self.select_files()
-                        ),
+                        )
                 }
 
         dpos = [35, 10] # x, y
 
         for _, button in self.buttons.items():
             button.place(x=dpos[0], y=dpos[1])
-            dpos[0] += 220
+            dpos[0] += 210
 
         # Parameters/Options
 
@@ -243,6 +260,14 @@ class jpegzilla:
                 '-baseline': tkinter.IntVar(),
                 '-notrellis': tkinter.IntVar()
                 }
+
+        self.jpegtran_parameters = {
+            '-rotate': tkinter.StringVar(self.root, value='0'),
+            '-transpose': tkinter.IntVar(),
+            '-transverse': tkinter.IntVar(),
+            '-trim': tkinter.IntVar(),
+            '-crop': tkinter.StringVar(self.root)
+        }
 
         self.cjpeg_parameters['-colorformat'].set('YUV 4:2:0')
         def uncheck_progressive():
@@ -337,8 +362,61 @@ class jpegzilla:
                     highlightthickness=0,
                     relief='flat',
                     variable=self.cjpeg_parameters['-notrellis']
-                    )
+                    ),
+
+                 'rotate': tkinter.Entry(
+                    self.root,
+                    width='6',
+                    bg='#8E8E8E', fg='#FFFFFF',
+                    bd=0,
+                    highlightbackground=self.fg,
+                    highlightthickness=0,
+                    relief='flat',
+                    textvariable=self.jpegtran_parameters['-rotate'],
+                 ),
+                 'transpose': tkinter.Checkbutton(
+                    self.root, text=self.locale['transpose'],
+                    bg=self.bg, fg=self.fg,
+                    bd=0,
+                    highlightbackground=self.fg,
+                    highlightthickness=0,
+                    relief='flat',
+                    variable=self.jpegtran_parameters['-transpose']
+                 ),
+                 'transverse': tkinter.Checkbutton(
+                    self.root, text=self.locale['transverse'],
+                    bg=self.bg, fg=self.fg,
+                    bd=0,
+                    highlightbackground=self.fg,
+                    highlightthickness=0,
+                    relief='flat',
+                    variable=self.jpegtran_parameters['-transverse']
+                 ),
+                 'trim': tkinter.Checkbutton(
+                    self.root, text=self.locale['trim'],
+                    bg=self.bg, fg=self.fg,
+                    bd=0,
+                    highlightbackground=self.fg,
+                    highlightthickness=0,
+                    relief='flat',
+                    variable=self.jpegtran_parameters['-trim']
+                 ),
+                 'crop': tkinter.Entry(
+                    self.root,
+                    width='24',
+                    bg='#8E8E8E', fg='#FFFFFF',
+                    bd=0,
+                    highlightbackground=self.fg,
+                    highlightthickness=0,
+                    relief='flat',
+                    textvariable=self.jpegtran_parameters['-crop'],
+                 ),
                 }
+
+        # - Labels
+
+        rotate_label = tkinter.Label(self.root, bg=self.bg, fg=self.fg, text=self.locale['rotate'])
+        crop_label = tkinter.Label(self.root, bg=self.bg, fg=self.fg, text=self.locale['crop'])
 
         # - Set the defaults
         self.gui_options['progressive'].select()
@@ -355,6 +433,14 @@ class jpegzilla:
         self.gui_options['optimize'].place(x=400, y=70)
         self.gui_options['baseline'].place(x=400, y=90)
         self.gui_options['notrellis'].place(x=400, y=125)
+
+        rotate_label.place(x=13, y=180)
+        self.gui_options['rotate'].place(x=15, y=200)
+        self.gui_options['transpose'].place(x=10, y=225)
+        self.gui_options['transverse'].place(x=10, y=245)
+        self.gui_options['trim'].place(x=180, y=190)
+        crop_label.place(x=183, y=210)
+        self.gui_options['crop'].place(x=185, y=245)
 
         # Queue/List
 
@@ -400,9 +486,9 @@ class jpegzilla:
         self.file_queue = tkinter.ttk.Treeview(self.queue, selectmode='browse')
         self.file_queue['columns'] = ('size', 'status', 'loc')
         self.file_queue.heading('#0', text=self.locale['treeview-filename'])
-        self.file_queue.column('#0', width=245, stretch='no')
+        self.file_queue.column('#0', width=345, stretch='no')
         self.file_queue.heading('size', text=self.locale['treeview-size'])
-        self.file_queue.column('size', width=145, stretch='no')
+        self.file_queue.column('size', width=245, stretch='no')
         self.file_queue.heading('status', text=self.locale['treeview-status'])
         self.file_queue.column('status', width=195, stretch='no')
         self.file_queue.heading('loc')
@@ -534,12 +620,16 @@ class jpegzilla:
         self.cancel_button.configure(state='normal')
 
         command = "cjpeg {targa} -outfile {filename}"
+        jpegtran_command = "jpegtran -outfile {filename}"
+
+        # CJPEG
 
         for parameter, value in self.cjpeg_parameters.items():
             value = value.get()
-            if not parameter in ['-quality', '-smooth', '-colorformat']:
+            if (not parameter in ['-quality', '-smooth', '-colorformat']):
                 if value:
-                    command += (' {0} {1}'.format(parameter, ('' if value in [0, 1] else value)))
+                    command += (" {0} {1}".format(parameter, ('' if value in [0, 1] else value)))
+                    jpegtran_command += (' -arithmetic' if parameter == '-arithmetic' else '')
 
             elif parameter == '-colorformat':
                 if value == 'RGB':
@@ -553,6 +643,39 @@ class jpegzilla:
 
             else:
                 command += ' {0} {1}'.format(parameter, value)
+
+        # JPEGTRAN
+
+        for parameter, value in self.jpegtran_parameters.items():
+            value = value.get()
+            if (not parameter in ['-rotate', '-crop']):
+                if value:
+                    jpegtran_command += (" {0} {1}".format(parameter, ('' if value in [0, 1] else value)))
+
+            elif parameter == '-rotate':
+                try:
+                    if int(value) > 360:
+                        raise ValueError
+                    elif int(value) == 0:
+                        pass
+                    else:
+                        jpegtran_command += ' -rotate ' + value
+                except ValueError: # not number or higher than 360 degrees
+                    pass
+
+            elif parameter == '-crop':
+                # ^ - start of the string
+                # \d+ - digits of unlimited length
+                # x - just "x"
+                # \+ - just "+"
+                reg_match = re.fullmatch(r'^\d+x\d+\+\d+\+\d+$', value)
+                if reg_match == None:
+                    pass
+                else:
+                    jpegtran_command += ' -crop ' + value
+
+            else:
+                jpegtran_command += (' {0} {1}'.format(parameter, ('' if value in [0, 1] else value)))
 
         files_to_compress = self.file_queue.get_children()
 
@@ -569,12 +692,17 @@ class jpegzilla:
 
                 self.file_queue.item(entry, values=( entry_data[0], self.locale['status-running'], entry_data[2] ))
 
-                c = (command.format(filename=(TEMPDIR + img + extension), targa=('-targa' if extension == '.tga' else '')) + ' ' + entry_data[2])
+                tmp_file_name = (TEMPDIR + img + extension)
+
+                cjpegc = (command.format(filename=tmp_file_name, targa=('-targa' if extension == '.tga' else '')) + ' ' + entry_data[2])
+                jpegtranc = (jpegtran_command.format(filename=tmp_file_name) + ' ' + tmp_file_name)
 
                 if self.debug:
-                    print(c)
+                    print(cjpegc)
+                    print(jpegtranc)
 
-                subprocess.Popen(c, shell=True, stdout=subprocess.PIPE).wait()
+                subprocess.Popen(cjpegc, shell=True, stdout=subprocess.PIPE).wait()
+                subprocess.Popen(jpegtranc, shell=True, stdout=subprocess.PIPE).wait()
                 self.file_queue.item(entry, values=( entry_data[0] + ' -> ' + self.convert_size(os.stat(TEMPDIR + img + extension).st_size), self.locale['status-completed'], entry_data[2] ))
 
             if self.cancel_thread:

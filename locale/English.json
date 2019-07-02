@@ -20,6 +20,7 @@
 	"": "-- TOP BUTTONS --",
 	"run-button": "COMPRESS",
 	"save-button": "SAVE AS",
+	"help-button": "HELP",
 	"import-button": "IMPORT",
 
 	"": "-- GUI OPTIONS --",
@@ -31,6 +32,11 @@
 	"optimize": "Optimize",
 	"baseline": "Baseline                       \n(unchecks Progressive)",
 	"notrellis": "Disable trellis optimization",
+	"rotate": "Rotate (in degrees)",
+	"transpose": "Transpose",
+	"transverse": "Transverse",
+	"trim": "Drop non-transformable edge blocks",
+	"crop": "Crop to a rectangular subarea      \n(WIDTHxHEIGHT+X_AXIS+Y_AXIS)",
 
 	"": "-- QUEUE --",
 	"clear-all-button": "CLEAR ALL",
