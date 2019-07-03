@@ -24,7 +24,7 @@ class jpegzilla:
         self.fg = '#000000' # Foreground color
         self.fgdis = '#555555' # Foreground color of disabled element
 
-        self.debug = True
+        self.debug = False
 
         first_run = False
 
@@ -693,6 +693,11 @@ class jpegzilla:
                 self.file_queue.item(entry, values=( entry_data[0], self.locale['status-running'], entry_data[2] ))
 
                 tmp_file_name = (TEMPDIR + img + extension)
+                counter = 1
+
+                while os.path.isfile(tmp_file_name):
+                    counter += 1
+                    tmp_file_name = (TEMPDIR + img + str(counter) + extension)
 
                 cjpegc = (command.format(filename=tmp_file_name, targa=('-targa' if extension == '.tga' else '')) + ' ' + entry_data[2])
                 jpegtranc = (jpegtran_command.format(filename=tmp_file_name) + ' ' + tmp_file_name)
@@ -700,10 +705,18 @@ class jpegzilla:
                 if self.debug:
                     print(cjpegc)
                     print(jpegtranc)
+                    print(entry_data)
 
                 subprocess.Popen(cjpegc, shell=True, stdout=subprocess.PIPE).wait()
                 subprocess.Popen(jpegtranc, shell=True, stdout=subprocess.PIPE).wait()
-                self.file_queue.item(entry, values=( entry_data[0] + ' -> ' + self.convert_size(os.stat(TEMPDIR + img + extension).st_size), self.locale['status-completed'], entry_data[2] ))
+                self.file_queue.item(
+                        entry, 
+                        values=( 
+                            entry_data[0] + ' -> ' + self.convert_size(os.stat(TEMPDIR + img + extension).st_size),
+                            self.locale['status-completed'],
+                            tmp_file_name
+                            )
+                        )
 
             if self.cancel_thread:
                 self.cancel_thread = False
@@ -749,3 +762,4 @@ if __name__ == '__main__':
         pass
 
     jz = jpegzilla()
+
