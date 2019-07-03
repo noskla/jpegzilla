@@ -592,14 +592,26 @@ class jpegzilla:
                 )
         self.filenames = self.root.tk.splitlist(filenames)
 
+        files_already_imported = []
+        ids_already_imported = self.file_queue.get_children()
+        for node in ids_already_imported:
+            files_already_imported.append(self.file_queue.item(node)['text'])
+            
+        print(files_already_imported) if self.debug else None
 
         for image in self.filenames:
-            
-            filesize = self.convert_size(os.stat(image).st_size)
+ 
+            basename = ntpath.basename(image)
 
-            self.file_queue.insert('', 'end', text=ntpath.basename(image), values=(
-                     filesize, self.locale['status-new'], image
-                ))
+            if not basename in files_already_imported:
+                filesize = self.convert_size(os.stat(image).st_size)
+
+                self.file_queue.insert('', 'end', text=basename, values=(
+                         filesize, self.locale['status-new'], image
+                    ))
+            
+            else:
+                messagebox.showerror(self.locale['title-error'], self.locale['import-same-file'].format(filename=basename))
 
         if self.filenames:
             self.buttons['run'].config(state='normal')

@@ -31,11 +31,17 @@
 	"optimize": "Optymalizuj",
 	"baseline": "Baseline                        \n(ignoruje \"progressive\")",
 	"notrellis": "Wyłącz optymalizacje Trellis",
+  "rotate": "Obróć (w stopniach)",
+  "transpose": "Transpose",
+  "transverse": "Transverse",
+  "trim": "Drop non-transformable edge blocks",
+  "crop": "Crop to a rectangular subarea       \n(SZExWYS+X+Y)",
 
 	"": "-- QUEUE --",
 	"clear-all-button": "WYCZYŚĆ",
 	"cancel-button": "PRZERWIJ",
 	"loaded-files": "Załadowano obrazów: {}",
+  "import-same-file": "{filename} jest już zimportowany.",
 
 	"treeview-filename": "Nazwa pliku",
 	"treeview-size": "Rozmiar",

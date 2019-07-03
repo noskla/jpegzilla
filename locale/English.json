@@ -42,6 +42,7 @@
 	"clear-all-button": "CLEAR ALL",
 	"cancel-button": "CANCEL",
 	"loaded-files": "Loaded images: {}",
+  "import-same-file": " {filename} is already imported.",
 
 	"treeview-filename": "Filename",
 	"treeview-size": "Size",
