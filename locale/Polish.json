@@ -7,7 +7,7 @@
 	"mozjpeg-found-local-dir": "Znaleziono MozJPEG w aktualnym katalogu..",
 	"mozjpeg-search-in-path": "Nie znaleziono MozJPEG w aktualnym katalogu. Szukam w PATH...",
 	"mozjpeg-found-path": "Znaleziono MozJPEG w PATH: {path} \nZapisuję informację, by przyśpieszyć późniejsze uruchomienia...",
-	"mozjpeg-not-found-error": "MozJPEG nie został znaleziony w systemie. Zajrzyj do poradnika instalacji:\nhttps://github.com/fabulouskana/jpegzilla/blob/master/README.md#installation",
+	"mozjpeg-not-found-error": "MozJPEG nie został znaleziony w systemie. Zajrzyj do poradnika instalacji:\nhttps://github.com/canimar/jpegzilla/blob/master/README.md#installation",
 	"mozjpeg-dll-missing-error": "Znaleziono cjpeg.exe, ale wymagany do niego plik .dll nie istnieje, zajrzyj do instrukcji instalacji Jpegzilla.",
 
 	"": "-- WINDOW NAMES --",
@@ -20,6 +20,7 @@
 	"": "-- TOP BUTTONS --",
 	"run-button": "KOMPRESUJ",
 	"save-button": "ZAPISZ",
+  "help-button": "POMOC",
 	"import-button": "IMPORTUJ",
 
 	"": "-- GUI OPTIONS --",
