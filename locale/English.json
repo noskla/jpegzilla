@@ -32,7 +32,7 @@
 	"optimize": "Optimize",
 	"baseline": "Baseline                       \n(unchecks Progressive)",
 	"notrellis": "Disable trellis optimization",
-	"rotate": "Rotate (in degrees)",
+	"rotate": "Rotate",
 	"transpose": "Transpose",
 	"transverse": "Transverse",
 	"trim": "Drop non-transformable edge blocks",

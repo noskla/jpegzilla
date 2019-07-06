@@ -262,7 +262,7 @@ class jpegzilla:
                 }
 
         self.jpegtran_parameters = {
-            '-rotate': tkinter.StringVar(self.root, value='0'),
+            '-rotate': tkinter.StringVar(self.root, value='0\N{DEGREE SIGN}'),
             '-transpose': tkinter.IntVar(),
             '-transverse': tkinter.IntVar(),
             '-trim': tkinter.IntVar(),
@@ -364,15 +364,10 @@ class jpegzilla:
                     variable=self.cjpeg_parameters['-notrellis']
                     ),
 
-                 'rotate': tkinter.Entry(
+                 'rotate': tkinter.OptionMenu(
                     self.root,
-                    width='6',
-                    bg='#8E8E8E', fg='#FFFFFF',
-                    bd=0,
-                    highlightbackground=self.fg,
-                    highlightthickness=0,
-                    relief='flat',
-                    textvariable=self.jpegtran_parameters['-rotate'],
+                    self.jpegtran_parameters['-rotate'],
+                    *['0\N{DEGREE SIGN}', '90\N{DEGREE SIGN}', '180\N{DEGREE SIGN}', '270\N{DEGREE SIGN}']
                  ),
                  'transpose': tkinter.Checkbutton(
                     self.root, text=self.locale['transpose'],
@@ -436,8 +431,8 @@ class jpegzilla:
 
         rotate_label.place(x=13, y=180)
         self.gui_options['rotate'].place(x=15, y=200)
-        self.gui_options['transpose'].place(x=10, y=225)
-        self.gui_options['transverse'].place(x=10, y=245)
+        self.gui_options['transpose'].place(x=10, y=230)
+        self.gui_options['transverse'].place(x=10, y=250)
         self.gui_options['trim'].place(x=180, y=190)
         crop_label.place(x=183, y=210)
         self.gui_options['crop'].place(x=185, y=245)
@@ -533,14 +528,17 @@ class jpegzilla:
         self.preview_window.title(self.locale['image-preview-title'].format(filename=file_name))
 
         # Open in image viewer
+        # https://github.com/canimar/jpegzilla/issues/4  
+        command = [
+                'start' if OS == 'Windows' else 'xdg-open',
+                (TEMPDIR + file_name) if (selected_file[1] == self.locale['status-completed']) else selected_file[2]
+                ]
+
         oiiv_button = tkinter.Button(
                 self.preview_window,
                 width='600',
                 text=self.locale['open-in-image-viewer'],
-                command=lambda:subprocess.Popen([
-                    'start' if OS == 'Windows' else 'xdg-open',
-                    TEMPDIR + file_name if selected_file[1] == self.locale['status-completed'] else selected_file[2]
-                    ], stdout=FNULL, stderr=subprocess.STDOUT)
+                command=lambda:subprocess.Popen(command) # stdout=FNULL, stderr=subprocess.STDOUT 
                 )
         oiiv_button.pack()
 
