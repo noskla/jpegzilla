@@ -699,7 +699,7 @@ class jpegzilla:
             img, extension = os.path.splitext(entry_data[2])
             img = img.split('/')[len(img.split('/')) - 1]
 
-            if entry_data[1] == self.locale['status-completed']:
+            if entry_data[1] in [self.locale['status-completed'], self.locale['status-error']]:
                 pass
             
             else:
