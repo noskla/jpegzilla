@@ -51,6 +51,7 @@
 	"status-completed": "Ukończono",
 	"status-running": "Kompresowanie...",
 	"status-new": "Nowy",
+  "status-error": "Błąd",
 
 	"select-filetypes": {
 		"compatible-formats": "Kompatybilne formaty plików",

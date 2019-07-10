@@ -51,6 +51,7 @@
 	"status-completed": "Completed",
 	"status-running": "Running...",
 	"status-new": "New",
+  "status-error": "Error",
 
 	"select-filetypes": {
 		"compatible-formats": "Compatible file formats",

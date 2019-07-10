@@ -524,6 +524,10 @@ class jpegzilla:
         except IndexError:
             return
 
+        # 'status'
+        if selected_file[1] == self.locale['status-error']:
+            return
+
         self.preview_window = tkinter.Toplevel(self.root)
         self.preview_window.title(self.locale['image-preview-title'].format(filename=file_name))
 
@@ -590,18 +594,18 @@ class jpegzilla:
                 )
         self.filenames = self.root.tk.splitlist(filenames)
 
-        files_already_imported = []
+        files_already_imported = {}
         ids_already_imported = self.file_queue.get_children()
         for node in ids_already_imported:
-            files_already_imported.append(self.file_queue.item(node)['text'])
-            
+            files_already_imported[self.file_queue.item(node)['text']] = self.file_queue.item(node)['values'][1]
+        
         print(files_already_imported) if self.debug else None
 
         for image in self.filenames:
  
             basename = ntpath.basename(image)
 
-            if not basename in files_already_imported:
+            if (not basename in files_already_imported.keys()) or (not files_already_imported[basename] == self.locale['status-new']):
                 filesize = self.convert_size(os.stat(image).st_size)
 
                 self.file_queue.insert('', 'end', text=basename, values=(
@@ -719,11 +723,15 @@ class jpegzilla:
 
                 subprocess.Popen(cjpegc, shell=True, stdout=subprocess.PIPE).wait()
                 subprocess.Popen(jpegtranc, shell=True, stdout=subprocess.PIPE).wait()
+
+                new_size = self.convert_size(os.stat(TEMPDIR + img + extension).st_size)
+                status = (self.locale['status-completed'] if not new_size == '0B' else self.locale['status-error'])
+
                 self.file_queue.item(
                         entry, 
                         values=( 
-                            entry_data[0] + ' -> ' + self.convert_size(os.stat(TEMPDIR + img + extension).st_size),
-                            self.locale['status-completed'],
+                            entry_data[0] + ' -> ' + new_size,
+                            status,
                             tmp_file_name
                             )
                         )
