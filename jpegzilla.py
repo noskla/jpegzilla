@@ -531,18 +531,18 @@ class jpegzilla:
         self.preview_window = tkinter.Toplevel(self.root)
         self.preview_window.title(self.locale['image-preview-title'].format(filename=file_name))
 
-        # Open in image viewer
-        # https://github.com/canimar/jpegzilla/issues/4  
-        command = [
-                'start' if OS == 'Windows' else 'xdg-open',
-                (TEMPDIR + file_name) if (selected_file[1] == self.locale['status-completed']) else selected_file[2]
-                ]
+        location = ((TEMPDIR + file_name) if (selected_file[1] == self.locale['status-completed']) else selected_file[2])
+
+        if OS == 'Windows':
+            command = ['start', location.replace('/', "\\")]
+        else:
+            command = ['xdg-open', location]
 
         oiiv_button = tkinter.Button(
                 self.preview_window,
                 width='600',
                 text=self.locale['open-in-image-viewer'],
-                command=lambda:subprocess.Popen(command) # stdout=FNULL, stderr=subprocess.STDOUT 
+                command=lambda:subprocess.Popen(command, shell=(OS == 'Windows'))
                 )
         oiiv_button.pack()
 
