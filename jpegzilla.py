@@ -24,7 +24,7 @@ class jpegzilla:
         self.fg = '#000000' # Foreground color
         self.fgdis = '#555555' # Foreground color of disabled element
 
-        self.debug = False
+        self.debug = DEBUG
 
         first_run = False
 
@@ -415,7 +415,7 @@ class jpegzilla:
 
         # - Set the defaults
         self.gui_options['progressive'].select()
-        self.gui_options['quality'].set(90)
+        self.gui_options['quality'].set(75)
         self.gui_options['optimize'].select()
 
         # - Place items

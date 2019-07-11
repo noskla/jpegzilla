@@ -8,10 +8,12 @@ import os, platform
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '1.0.1'
+VER = '1.1.0-pre'
 
-DOCS_URL = 'http://jpegzilla.cyberhangar.org/'
+DEBUG = False
+DOCS_URL = 'https://canimar.github.io/jpegzilla/'
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):
     os.mkdir(TEMPDIR)
+
