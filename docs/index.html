@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+    <title>Jpegzilla</title>
+  </head>
+  <body>
+    <div style="text-align: center;">
+      <h1>Jpegzilla</h1>
+      <h4>A MozJPEG graphical user interface</h4>
+      <br />
+			<a href="#about">About</a>
+      <a href="https://github.com/canimar/jpegzilla/blob/master/README.md">Installation</a>
+      <a href="#mozjpeg">Compiling MozJPEG</a>
+      <a href="#usage">Usage</a>
+      <a href="https://github.com/canimar/jpegzilla">Source</a>
+			<a href="https://github.com/canimar/jpegzilla/releases/">Binaries</a>
+			<a href="https://cykvna.neocities.org/#msg">Contact</a>
+    </div>
+    <hr id="about" />
+    <div>
+      <h2><u>About Jpegzilla</u></h2>
+      <p>
+        MozJPEG lacks a good user-friendly front-end, that's why Jpegzilla has been made.
+        Jpegzilla is open-source software, it has been confirmed it can run on Windows XP+ and
+        every modern Linux distribution. It requires Python 3.4+ installed (or library bundled with the binary).
+        It uses the Tkinter library for GUI as it is lightweight, fast and simple.
+      </p>
+		</div>
+		<hr id="mozjpeg" />
+		<div>
+      <h2><u>Compiling MozJPEG</u></h2>
+      <p>
+        To compile MozJPEG on Debian/Ubuntu distributions you can refer
+        to my video below and follow the steps.
+      </p>
+			<video controls muted width="740">
+				<source src="debian-mozjpeg.mp4" type="video/mp4">
+				Your browser does not support HTML5 video tag. <a href="debian-mozjpeg.mp4" target="_blank">Download video</a>
+			</video>
+      <p>
+        For Arch Linux, Manjaro or Antergos you can just simply use the
+        <a href="https://aur.archlinux.org/packages/mozjpeg">MozJPEG AUR package</a>.
+      </p>
+      <p>
+        You can also check out <a href="https://mozjpeg.codelove.de/binaries.html">this website</a> 
+        that contains precompiled binaries for MozJPEG, but I do not guarantee they're entirely
+        safe as they're not published by me nor Mozilla.
+      </p>
+      <p>
+        <a href="https://github.com/mozilla/mozjpeg/blob/master/BUILDING.md">Official building instructions</a>
+      </p>
+		</div>
+    <hr id="usage" />
+    <div>
+      <h2>Usage</h2>
+      <h4>Functions</h4>
+      <ul>
+        <li>Image Quality - Compression quality (5-95 is the most useful range)</li>
+        <li>Smoothing - Smooth dithered input (1..100 is strength)</li>
+        <li>Progressive - Create progressive JPEG file (on by default)</li>
+        <li>Greyscale - Create monochrome JPEG file</li>
+        <li>Use arithmetic coding - <a href="https://en.wikipedia.org/wiki/Arithmetic_coding">en.wikipedia.org/wiki/Arithetic_coding</a></li>
+        <li>Optimize - Optimize Huffman table (smaller file, but slow compression, on by default)</li>
+        <li>Baseline - Create baseline JPEG file (incompatible with Progressive)</li>
+        <li>Disable trellis optimization - <a href="https://en.wikipedia.org/wiki/Trellis_quantization">en.wikipedia.org/wiki/Trellis_quantization</a></li>
+				<li>Rotate - Rotate image (degrees clockwise)</li>
+        <li>Transpose - (incompatible with Transverse)</li>
+        <li>Transverse - (incompatible with Transpose)</li>
+        <li>Drop non-transformable edge blocks</li>
+        <li>Crop to a rectangular subarea - syntax WIDTHxHEIGHT+X_AXIS+Y_AXIS, example: 500x300+200+100</li>
+      </ul>
+      <p>
+        More information can be found in
+        <a href="https://linux.die.net/man/1/jpegtran">jpegtran manual</a>.
+      </p>
+    </div>
+  </body>
+</html>
+
