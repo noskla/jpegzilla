@@ -11,7 +11,7 @@ except ImportError:
 jzexe = Executable(
         'jpegzilla.py', 
         base = ('Win32GUI' if os.name == 'nt' else None),
-        icon = None
+        icon = JZ_ICON
         )
 
 if os.name == 'nt':

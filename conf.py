@@ -9,6 +9,7 @@ import os, platform
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
 VER = '1.1.0-pre'
+JZ_ICON = 'icons/icon-96x96.gif'
 
 DEBUG = False
 DOCS_URL = 'https://canimar.github.io/jpegzilla/'
