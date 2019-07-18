@@ -8,7 +8,7 @@ import os, platform
 
 FNULL = open(os.devnull, 'w')
 OS = platform.system()
-VER = '1.1.0-pre'
+VER = '1.1.0-pre2'
 JZ_ICON = 'icons/icon-96x96.gif'
 
 DEBUG = False

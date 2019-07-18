@@ -637,7 +637,7 @@ class jpegzilla:
         self.cancel_button.configure(state='normal')
 
         command = "cjpeg {targa} -outfile {filename}"
-        jpegtran_command = "jpegtran -outfile {filename}"
+        jpegtran_command = "jpegtran"
 
         # CJPEG
 
@@ -670,6 +670,7 @@ class jpegzilla:
                     jpegtran_command += (" {0} {1}".format(parameter, ('' if value in [0, 1] else value)))
 
             elif parameter == '-rotate':
+                value = value[:-1] # remove degree character
                 try:
                     if int(value) > 360:
                         raise ValueError
@@ -717,7 +718,7 @@ class jpegzilla:
                     tmp_file_name = (TEMPDIR + img + str(counter) + extension)
 
                 cjpegc = (command.format(filename=tmp_file_name, targa=('-targa' if extension == '.tga' else '')) + ' ' + entry_data[2])
-                jpegtranc = (jpegtran_command.format(filename=tmp_file_name) + ' ' + tmp_file_name)
+                jpegtranc = (jpegtran_command + ' -outfile ' + tmp_file_name + ' ' + tmp_file_name)
 
                 if self.debug:
                     print(cjpegc)
