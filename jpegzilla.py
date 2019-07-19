@@ -273,19 +273,24 @@ class jpegzilla:
         }
 
         self.cjpeg_parameters['-colorformat'].set('YUV 4:2:0')
-        def uncheck_progressive():
-            if self.cjpeg_parameters['-progressive'].get() or self.gui_options['progressive']['state'] == 'normal':
-                self.cjpeg_parameters['-progressive'].set(0)
-                self.gui_options['progressive'].configure(state='disabled')
-            else:
-                self.gui_options['progressive'].configure(state='normal')
 
-        def uncheck_optimize():
-            if self.cjpeg_parameters['-optimize'].get() or self.gui_options['optimize']['state'] == 'normal':
-                self.cjpeg_parameters['-optimize'].set(0)
-                self.gui_options['optimize'].configure(state='disabled')
-            else:
-                self.gui_options['optimize'].configure(state='normal')
+
+        def switch_checked(parameter, parameter_group):
+
+            if parameter_group == 'cjpeg':
+                if self.cjpeg_parameters[parameter].get() or self.gui_options[parameter[1:]]['state'] == 'normal':
+                    self.cjpeg_parameters[parameter].set(0)
+                    self.gui_options[parameter[1:]].configure(state='disabled')
+                else:
+                    self.gui_options[parameter[1:]].configure(state='normal')
+
+            elif parameter_group == 'jpegtran':
+                if self.jpegtran_parameters[parameter].get() or self.gui_options[parameter[1:]]['state'] == 'normal':
+                    self.jpegtran_parameters[parameter].set(0)
+                    self.gui_options[parameter[1:]].configure(state='disabled')
+                else:
+                    self.gui_options[parameter[1:]].configure(state='normal')
+
 
         self.gui_options = {
                 'quality': tkinter.Scale(
@@ -332,7 +337,7 @@ class jpegzilla:
                     highlightthickness=0, 
                     relief='flat', 
                     variable=self.cjpeg_parameters['-arithmetic'],
-                    command=lambda:uncheck_optimize()
+                    command=lambda:switch_checked('-optimize', 'cjpeg')
                     ),
                 'colorformat': tkinter.OptionMenu(
                     self.root, 
@@ -355,7 +360,7 @@ class jpegzilla:
                     highlightthickness=0,
                     relief='flat',
                     variable=self.cjpeg_parameters['-baseline'],
-                    command=lambda:uncheck_progressive()
+                    command=lambda:switch_checked('-progressive', 'cjpeg')
                     ),
                  'notrellis': tkinter.Checkbutton(
                     self.root, text=self.locale['notrellis'],
@@ -379,7 +384,8 @@ class jpegzilla:
                     highlightbackground=self.fg,
                     highlightthickness=0,
                     relief='flat',
-                    variable=self.jpegtran_parameters['-transpose']
+                    variable=self.jpegtran_parameters['-transpose'],
+                    command=lambda:switch_checked('-transverse', 'jpegtran')
                  ),
                  'transverse': tkinter.Checkbutton(
                     self.root, text=self.locale['transverse'],
@@ -388,7 +394,8 @@ class jpegzilla:
                     highlightbackground=self.fg,
                     highlightthickness=0,
                     relief='flat',
-                    variable=self.jpegtran_parameters['-transverse']
+                    variable=self.jpegtran_parameters['-transverse'],
+                    command=lambda:switch_checked('-transpose', 'jpegtran')
                  ),
                  'trim': tkinter.Checkbutton(
                     self.root, text=self.locale['trim'],
