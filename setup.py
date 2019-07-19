@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import os, sys
-from conf import VER
+from conf import VER, JZ_ICON
 
 try:
     from cx_Freeze import setup, Executable
