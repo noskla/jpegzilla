@@ -419,7 +419,6 @@ class jpegzilla:
                 }
 
         # - Labels
-
         rotate_label = tkinter.Label(self.root, bg=self.bg, fg=self.fg, text=self.locale['rotate'])
         crop_label = tkinter.Label(self.root, bg=self.bg, fg=self.fg, text=self.locale['crop'])
 
@@ -439,13 +438,13 @@ class jpegzilla:
         self.gui_options['baseline'].place(x=400, y=90)
         self.gui_options['notrellis'].place(x=400, y=125)
 
-        rotate_label.place(x=13, y=180)
-        self.gui_options['rotate'].place(x=15, y=200)
-        self.gui_options['transpose'].place(x=10, y=230)
-        self.gui_options['transverse'].place(x=10, y=250)
-        self.gui_options['trim'].place(x=180, y=190)
-        crop_label.place(x=183, y=210)
-        self.gui_options['crop'].place(x=185, y=245)
+        rotate_label.place(x=13, y=170)
+        self.gui_options['rotate'].place(x=15, y=190)
+        self.gui_options['transpose'].place(x=10, y=225)
+        self.gui_options['transverse'].place(x=10, y=245)
+        self.gui_options['trim'].place(x=170, y=180)
+        crop_label.place(x=183, y=205)
+        self.gui_options['crop'].place(x=185, y=240)
 
         # Queue/List
 
