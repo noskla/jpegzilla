@@ -7,7 +7,11 @@
 	"mozjpeg-found-local-dir": "Znaleziono MozJPEG w aktualnym katalogu..",
 	"mozjpeg-search-in-path": "Nie znaleziono MozJPEG w aktualnym katalogu. Szukam w PATH...",
 	"mozjpeg-found-path": "Znaleziono MozJPEG w PATH: {path} \nZapisuję informację, by przyśpieszyć późniejsze uruchomienia...",
+<<<<<<< HEAD:locale/Polish.json
 	"mozjpeg-not-found-error": "MozJPEG nie został znaleziony w systemie. Zajrzyj do poradnika instalacji:\nhttps://github.com/fabulouskana/jpegzilla/blob/master/README.md#installation",
+=======
+	"mozjpeg-not-found-error": "MozJPEG nie został znaleziony w systemie. Zajrzyj do poradnika instalacji:\nhttps://github.com/canimar/jpegzilla/blob/master/README.md#installation",
+>>>>>>> origin/master:locale/pl_PL.json
 	"mozjpeg-dll-missing-error": "Znaleziono cjpeg.exe, ale wymagany do niego plik .dll nie istnieje, zajrzyj do instrukcji instalacji Jpegzilla.",
 
 	"": "-- WINDOW NAMES --",
@@ -20,6 +24,7 @@
 	"": "-- TOP BUTTONS --",
 	"run-button": "KOMPRESUJ",
 	"save-button": "ZAPISZ",
+  "help-button": "POMOC",
 	"import-button": "IMPORTUJ",
 
 	"": "-- GUI OPTIONS --",
@@ -29,13 +34,24 @@
 	"greyscale": "Czerń i biel",
 	"arithmetic": "Kodowanie arytmetyczne",
 	"optimize": "Optymalizuj",
+<<<<<<< HEAD:locale/Polish.json
 	"baseline": "Baseline                        \n(ignoruje \"progressive\")",
 	"notrellis": "Wyłącz optymalizacje Trellis",
+=======
+	"baseline": "Baseline",
+	"notrellis": "Wyłącz optymalizacje Trellis",
+  "rotate": "Obróć",
+  "transpose": "Transpose",
+  "transverse": "Transverse",
+  "trim": "Drop non-transformable edge blocks",
+  "crop": "Crop to a rectangular subarea\n(SZExWYS+X+Y)",
+>>>>>>> origin/master:locale/pl_PL.json
 
 	"": "-- QUEUE --",
 	"clear-all-button": "WYCZYŚĆ",
 	"cancel-button": "PRZERWIJ",
 	"loaded-files": "Załadowano obrazów: {}",
+  "import-same-file": "{filename} jest już zimportowany.",
 
 	"treeview-filename": "Nazwa pliku",
 	"treeview-size": "Rozmiar",
@@ -44,6 +60,7 @@
 	"status-completed": "Ukończono",
 	"status-running": "Kompresowanie...",
 	"status-new": "Nowy",
+  "status-error": "Błąd",
 
 	"select-filetypes": {
 		"compatible-formats": "Kompatybilne formaty plików",
@@ -51,14 +68,6 @@
 	},
 
 	"": "-- PREVIEW --",
-	"open-in-image-viewer": "Otwórz w domyślnej przeglądarce zdjęć",
-
-	"": "-- CLI --",
-	"version-info": "Jpegzilla {version}\nhttps://github.com/fabulouskana/jpegzilla",
-	"help-info": "Uruchom program za pomocą komendy \"jpegzilla\" lub uruchamiając skrypt bez argumentów.\n    -v, --version  - Wyświetl informacje o wersji.",
-	"unknown-argument": "Nieznany argument. Wpisz --help, by uzyskać więcej informacji."
-
-
+	"open-in-image-viewer": "Otwórz w domyślnej przeglądarce zdjęć"
 
 }
-

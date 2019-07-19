@@ -1,1 +1,1 @@
-hurry.filesize==1.0
+Pillow

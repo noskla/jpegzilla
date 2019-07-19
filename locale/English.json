@@ -20,6 +20,7 @@
 	"": "-- TOP BUTTONS --",
 	"run-button": "COMPRESS",
 	"save-button": "SAVE AS",
+	"help-button": "HELP",
 	"import-button": "IMPORT",
 
 	"": "-- GUI OPTIONS --",
@@ -29,13 +30,24 @@
 	"greyscale": "Greyscale",
 	"arithmetic": "Use arithmetic coding",
 	"optimize": "Optimize",
+<<<<<<< HEAD:locale/English.json
 	"baseline": "Baseline                       \n(unchecks Progressive)",
 	"notrellis": "Disable trellis optimization",
+=======
+	"baseline": "Baseline",
+	"notrellis": "Disable trellis optimization",
+	"rotate": "Rotate",
+	"transpose": "Transpose",
+	"transverse": "Transverse",
+	"trim": "Drop non-transformable edge blocks",
+	"crop": "Crop to a rectangular subarea      \n(WIDTHxHEIGHT+X_AXIS+Y_AXIS)",
+>>>>>>> origin/master:locale/en_US.json
 
 	"": "-- QUEUE --",
 	"clear-all-button": "CLEAR ALL",
 	"cancel-button": "CANCEL",
 	"loaded-files": "Loaded images: {}",
+  "import-same-file": " {filename} is already imported.",
 
 	"treeview-filename": "Filename",
 	"treeview-size": "Size",
@@ -44,6 +56,7 @@
 	"status-completed": "Completed",
 	"status-running": "Running...",
 	"status-new": "New",
+  "status-error": "Error",
 
 	"select-filetypes": {
 		"compatible-formats": "Compatible file formats",
@@ -51,14 +64,7 @@
 	},
 
 	"": "-- PREVIEW --",
-	"open-in-image-viewer": "Open in system default Image Viewer",
-
-	"": "-- CLI --",
-	"version-info": "Jpegzilla {version}\nhttps://github.com/fabulouskana/jpegzilla",
-	"help-info": "Run program by just typing \"jpegzilla\" or by running script without any arguments.\n    -v, --version  - Display version information.",
-	"unknown-argument": "Unknown argument. Type --help for more information."
-
-
+	"open-in-image-viewer": "Open in system default Image Viewer"
 
 }
 
