@@ -30,7 +30,7 @@
 	"greyscale": "Greyscale",
 	"arithmetic": "Use arithmetic coding",
 	"optimize": "Optimize",
-	"baseline": "Baseline                       \n(unchecks Progressive)",
+	"baseline": "Baseline",
 	"notrellis": "Disable trellis optimization",
 	"rotate": "Rotate",
 	"transpose": "Transpose",

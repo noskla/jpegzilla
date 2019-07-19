@@ -13,7 +13,7 @@ import webbrowser
 from tkinter import messagebox
 from PIL import Image, ImageTk
 
-from conf import *
+from conf import TEMPDIR, JZ_ICON_TKINTER, VER, OS, DOCS_URL, DEBUG
 
 class jpegzilla:
 
@@ -88,7 +88,7 @@ class jpegzilla:
             first_run_setup.geometry('300x180')
             first_run_setup.title('Jpegzilla - First run setup')
             first_run_setup.resizable(False, False)
-            self._icon = tkinter.PhotoImage(file=JZ_ICON)
+            self._icon = tkinter.PhotoImage(file=JZ_ICON_TKINTER)
             first_run_setup.tk.call('wm', 'iconphoto', first_run_setup._w, self._icon)
             first_run_setup.configure(bg=self.bg)
             first_run_setup.protocol('WM_DELETE_WINDOW', lambda:sys.exit())
@@ -178,7 +178,7 @@ class jpegzilla:
         self.root.title(self.locale['window-title'])
         self.root.resizable(False, False)
         self.root.configure(background=self.bg)
-        self._icon = tkinter.PhotoImage(file=JZ_ICON)
+        self._icon = tkinter.PhotoImage(file=JZ_ICON_TKINTER)
         self.root.tk.call('wm', 'iconphoto', self.root._w, self._icon)
 
         # Primary buttons

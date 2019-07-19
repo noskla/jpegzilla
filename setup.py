@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import os, sys
-from conf import VER, JZ_ICON
+from conf import VER, JZ_ICON_SETUP
 
 try:
     from cx_Freeze import setup, Executable
@@ -11,8 +11,13 @@ except ImportError:
 jzexe = Executable(
         'jpegzilla.py', 
         base = ('Win32GUI' if os.name == 'nt' else None),
-        icon = JZ_ICON
+        icon = JZ_ICON_SETUP
         )
+
+include_files = [
+    './locale/',
+    './icons/'
+]
 
 if os.name == 'nt':
 
@@ -21,11 +26,10 @@ if os.name == 'nt':
     os.environ['TCL_LIBRARY'] = python_install_dir + '/tcl/tcl8.6'
     os.environ['TK_LIBRARY'] = python_install_dir + '/tcl/tk8.6'
 
-    include_files = [python_install_dir + '/DLLs/tcl86t.dll', python_install_dir + '/DLLs/tk86t.dll', './locale/']
-
-else:
-
-    include_files = ['./locale/']
+    include_files = include_files + [
+        python_install_dir + '/DLLs/tcl86t.dll',
+        python_install_dir + '/DLLs/tk86t.dll',
+        ]
 
 
 setup(
@@ -45,5 +49,3 @@ setup(
     executables = [jzexe]
 
 )
-
-
