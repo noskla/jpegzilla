@@ -71,14 +71,7 @@ The program is ready to use.
 
 #### Windows XP, Vista
 
-I am not actively testing the functionality on those OS's but
-the install prodecure should be the same as above, with the
-exception of used software version.  
-I am not able to perform tests on this OS's often,
-so if I am missing something please file an issue.
-
-Use [version of Python compatible with Windows XP](https://www.python.org/downloads/release/python-343/).
-Use [Visual Studio 2012](https://visualstudio.microsoft.com/vs/older-downloads/#visual-studio-2012-family).
+Since version 1.2.0-pre Jpegzilla requires at least Python 3.6 which doesn't support Windows XP and Vista.
 
 ---
 
