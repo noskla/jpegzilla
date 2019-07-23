@@ -14,13 +14,20 @@ else:
 _here = os.path.dirname(os.path.abspath(_thisfile.replace('\\', '/')))
 
 OS = platform.system()
-VER = '1.1.0-pre2'
+
+# --- Editable content ---
+
+VER = '1.2.0-pre'
 
 JZ_ICON_SETUP = ('icons/icon-96x96.ico' if OS == 'Windows' else 'icons/icon-96x96.gif')
 JZ_ICON_TKINTER = (_here + '/icons/icon-96x96.gif')
 
 DEBUG = False
 DOCS_URL = 'https://canimar.github.io/jpegzilla/'
+
+SUPPORTED_FORMATS = ['*.jpg', '*.jpeg', '*.tga', '*.png']
+
+# --- --- --- --- --- ---
 
 TEMPDIR = ((os.getenv('WINDIR').replace('\\', '/') + '/Temp/jpegzilla/') if OS == 'Windows' else '/tmp/jpegzilla/')
 if not os.path.exists(TEMPDIR):

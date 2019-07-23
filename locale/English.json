@@ -42,16 +42,18 @@
 	"clear-all-button": "CLEAR ALL",
 	"cancel-button": "CANCEL",
 	"loaded-files": "Loaded images: {}",
-  "import-same-file": " {filename} is already imported.",
+    "import-same-file": " {filename} is already imported.",
 
 	"treeview-filename": "Filename",
 	"treeview-size": "Size",
 	"treeview-status": "Status",
 
 	"status-completed": "Completed",
-	"status-running": "Running...",
+    "status-preparing": "Preparing",
+    "status-converting": "Converting",
+	"status-running": "Compressing",
 	"status-new": "New",
-  "status-error": "Error",
+    "status-error": "Error",
 
 	"select-filetypes": {
 		"compatible-formats": "Compatible file formats",

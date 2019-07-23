@@ -3,27 +3,27 @@
 	"locale-code": "pl_PL",
 	"locale-name": "Polski",
 
-	"": "-- MOZJPEG DETECTION --",
+	"": "-- DETEKCJA MOZJPEG --",
 	"mozjpeg-found-local-dir": "Znaleziono MozJPEG w aktualnym katalogu..",
 	"mozjpeg-search-in-path": "Nie znaleziono MozJPEG w aktualnym katalogu. Szukam w PATH...",
 	"mozjpeg-found-path": "Znaleziono MozJPEG w PATH: {path} \nZapisuję informację, by przyśpieszyć późniejsze uruchomienia...",
 	"mozjpeg-not-found-error": "MozJPEG nie został znaleziony w systemie. Zajrzyj do poradnika instalacji:\nhttps://github.com/canimar/jpegzilla/blob/master/README.md#installation",
 	"mozjpeg-dll-missing-error": "Znaleziono cjpeg.exe, ale wymagany do niego plik .dll nie istnieje, zajrzyj do instrukcji instalacji Jpegzilla.",
 
-	"": "-- WINDOW NAMES --",
+	"": "-- NAZWY OKIEN --",
 	"window-title": "Jpegzilla - Graficzny interfejs użytkownika dla MozJPEG",
 	"image-preview-title": "Pogląd obrazu - {filename}",
 	"save-all-title": "Wybierz katalog do którego zapisać skompresowane pliki...",
 	"select-files-title": "Wybierz pliki do importu...",
 	"title-error": "Jpegzilla - Błąd",
 
-	"": "-- TOP BUTTONS --",
+	"": "-- GÓRNE PRZYCISKI --",
 	"run-button": "KOMPRESUJ",
 	"save-button": "ZAPISZ",
-  "help-button": "POMOC",
+    "help-button": "POMOC",
 	"import-button": "IMPORTUJ",
 
-	"": "-- GUI OPTIONS --",
+	"": "-- OPCJE --",
 	"image-quality": "Jakość Obrazu",
 	"smoothing": "Wygładzanie",
 	"progressive": "Progresywnie",
@@ -32,33 +32,35 @@
 	"optimize": "Optymalizuj",
 	"baseline": "Baseline",
 	"notrellis": "Wyłącz optymalizacje Trellis",
-  "rotate": "Obróć",
-  "transpose": "Transpose",
-  "transverse": "Transverse",
-  "trim": "Drop non-transformable edge blocks",
-  "crop": "Crop to a rectangular subarea\n(SZExWYS+X+Y)",
+    "rotate": "Obróć",
+    "transpose": "Transpose",
+    "transverse": "Transverse",
+    "trim": "Drop non-transformable edge blocks",
+    "crop": "Crop to a rectangular subarea\n(SZExWYS+X+Y)",
 
-	"": "-- QUEUE --",
+	"": "-- KOLEJKA --",
 	"clear-all-button": "WYCZYŚĆ",
 	"cancel-button": "PRZERWIJ",
 	"loaded-files": "Załadowano obrazów: {}",
-  "import-same-file": "{filename} jest już zimportowany.",
+    "import-same-file": "{filename} jest już zimportowany.",
 
 	"treeview-filename": "Nazwa pliku",
 	"treeview-size": "Rozmiar",
 	"treeview-status": "Status",
 
 	"status-completed": "Ukończono",
-	"status-running": "Kompresowanie...",
+	"status-preparing": "Przygotowywanie",
+	"status-converting": "Konwertowanie",
+	"status-running": "Kompresowanie",
 	"status-new": "Nowy",
-  "status-error": "Błąd",
+    "status-error": "Błąd",
 
 	"select-filetypes": {
 		"compatible-formats": "Kompatybilne formaty plików",
 		"all-files": "Wszystkie pliki"
 	},
 
-	"": "-- PREVIEW --",
+	"": "-- PODGLĄD --",
 	"open-in-image-viewer": "Otwórz w domyślnej przeglądarce zdjęć"
 
 }

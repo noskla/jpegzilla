@@ -13,7 +13,7 @@ import webbrowser
 from tkinter import messagebox
 from PIL import Image, ImageTk
 
-from conf import TEMPDIR, JZ_ICON_TKINTER, VER, OS, DOCS_URL, DEBUG
+from conf import TEMPDIR, JZ_ICON_TKINTER, VER, OS, DOCS_URL, DEBUG, SUPPORTED_FORMATS
 
 class jpegzilla:
 
@@ -510,6 +510,16 @@ class jpegzilla:
 
         self.root.mainloop()
 
+    def print_debug(self, message):
+
+        if not self.debug:
+            return
+
+        prefix = ( "\033[33m[DEBUG]\033[0m " if (not OS == 'Windows') else '[DEBUG] ' )
+        print(prefix + message)
+        
+
+
     def remove_files(self):
 
         selected_files = self.file_queue.selection()
@@ -597,7 +607,7 @@ class jpegzilla:
                     initialdir='~',
                     title=self.locale['select-files-title'],
                     filetypes=(
-                        (self.locale['select-filetypes']['compatible-formats'], ['*.jpeg', '*.jpg', '*.tga']),
+                        (self.locale['select-filetypes']['compatible-formats'], SUPPORTED_FORMATS),
                         (self.locale['select-filetypes']['all-files'], '*.*')
                     )
                 )
@@ -607,8 +617,7 @@ class jpegzilla:
         ids_already_imported = self.file_queue.get_children()
         for node in ids_already_imported:
             files_already_imported[self.file_queue.item(node)['text']] = self.file_queue.item(node)['values'][1]
-        
-        print(files_already_imported) if self.debug else None
+
 
         for image in self.filenames:
  
@@ -639,112 +648,179 @@ class jpegzilla:
 
     def compress(self):
 
+        # Disable buttons
         self.buttons['run'].configure(state='disabled')
         self.cancel_button.configure(state='normal')
 
-        command = "cjpeg {targa} -outfile {filename}"
-        jpegtran_command = "jpegtran"
+        # Prepare commands
+        commands = {
+            'cjpeg'   : "cjpeg{is_targa} {parameters} -outfile \"{temporary_filename}\" \"{original_filename}\"",
+            'jpegtran': "jpegtran {parameters} -outfile \"{new_filename}\" \"{temporary_filename}\""
+        }
 
-        # CJPEG
+        non_checkbutton_parameters = [
+            '-quality', '-smooth', '-colorformat', '-rotate', '-crop'
+        ]
+
+        # Construct parameters for cjpeg command.
+        selected_cjpeg_parameters = ''
+        colorformat_replacement = {
+            'RGB': '-rgb',
+            'YUV 4:2:0': '-sample 2x2',
+            'YUV 2:2:2': '-sample 2x1',
+            'YUV 4:4:4': '-sample 1x1'
+        }
 
         for parameter, value in self.cjpeg_parameters.items():
             value = value.get()
-            if (not parameter in ['-quality', '-smooth', '-colorformat']):
-                if value:
-                    command += (" {0} {1}".format(parameter, ('' if value in [0, 1] else value)))
-                    jpegtran_command += (' -arithmetic' if parameter == '-arithmetic' else '')
 
-            elif parameter == '-colorformat':
-                if value == 'RGB':
-                    command += '-rgb'
-                elif value == 'YUV 4:2:0':
-                    command += '-sample 2x2'
-                elif value == 'YUV 4:2:2':
-                    command += '-sample 2x1'
-                elif value == 'YUV 4:4:4':
-                    command += '-sample 1x1'
+            if parameter in non_checkbutton_parameters:
+                selected_cjpeg_parameters += (
+                    f" {parameter} {value}" if not parameter == '-colorformat' 
+                    else f" {colorformat_replacement[value]}"
+                    )
 
             else:
-                command += ' {0} {1}'.format(parameter, value)
+                if value: # If checked.
+                    selected_cjpeg_parameters += f" {parameter}"
 
-        # JPEGTRAN
+        # Remove first space
+        selected_cjpeg_parameters = selected_cjpeg_parameters[1:]
+
+        self.print_debug(f"Using cjpeg parameters: \"{selected_cjpeg_parameters}\" ")
+
+        # Construct parameters for jpegtran command
+        selected_jpegtran_parameters = ''
 
         for parameter, value in self.jpegtran_parameters.items():
             value = value.get()
-            if (not parameter in ['-rotate', '-crop']):
-                if value:
-                    jpegtran_command += (" {0} {1}".format(parameter, ('' if value in [0, 1] else value)))
 
-            elif parameter == '-rotate':
-                value = value[:-1] # remove degree character
-                try:
-                    if int(value) > 360:
-                        raise ValueError
-                    elif int(value) == 0:
-                        pass
-                    else:
-                        jpegtran_command += ' -rotate ' + value
-                except ValueError: # not number or higher than 360 degrees
-                    pass
+            if parameter == '-rotate':
+                # If rotate parameter is unchanged, don't apply it to the final command.
+                if value == u'0\N{DEGREE SIGN}':
+                    parameter = ''
+                else:
+                    # Remove the degree character
+                    value = value[:-1]
 
             elif parameter == '-crop':
-                # ^ - start of the string
                 # \d+ - digits of unlimited length
-                # x - just "x"
-                # \+ - just "+"
+                # x - just "x", \+ - just "+"
                 reg_match = re.fullmatch(r'^\d+x\d+\+\d+\+\d+$', value)
                 if reg_match == None:
-                    pass
-                else:
-                    jpegtran_command += ' -crop ' + value
+                    self.print_debug(f"Wrong crop syntax or empty value. '-crop {value}'")
+                    parameter = value = ''
 
+            if parameter in non_checkbutton_parameters:
+                selected_jpegtran_parameters += f" {parameter} {value}"
             else:
-                jpegtran_command += (' {0} {1}'.format(parameter, ('' if value in [0, 1] else value)))
+                if value: # If checked.
+                    selected_jpegtran_parameters += f" {parameter}"
 
+        # Remove first space
+        selected_jpegtran_parameters = selected_jpegtran_parameters[1:]
+
+        self.print_debug(f"Using jpegtran parameters: \"{selected_jpegtran_parameters}\" ")
+
+        # Prepare to loop through files
         files_to_compress = self.file_queue.get_children()
 
-        for entry in files_to_compress:
+        def change_status(target, target_information, status_id, size=None, path=None):
 
-            entry_data = self.file_queue.item(entry)['values']
-            img, extension = os.path.splitext(entry_data[2])
-            img = img.split('/')[len(img.split('/')) - 1]
+            self.file_queue.item(target, values=( 
+                (target_information['file_size'] if size == None else size),
+                self.locale[status_id],
+                (target_information['path'] if path == None else path)
+             ))
 
-            if entry_data[1] in [self.locale['status-completed'], self.locale['status-error']]:
+        for target in files_to_compress:
+
+            self.print_debug(f"Loop currently operating on {target}.")
+            target_information = self.file_queue.item(target)['values']
+            target_information = {
+                'file_size': target_information[0],
+                'status': target_information[1],
+                'path': target_information[2]
+            }
+
+            change_status(target, target_information, 'status-preparing')
+            self.print_debug('Target information:\n' + ', '.join( target_information.values() ))
+
+            path, extension = os.path.splitext(target_information['path'])
+            filename = path.split('/')[ len(path.split('/')) - 1 ]
+
+            unacceptable_statuses = [
+                self.locale['status-completed'],
+                self.locale['status-error']
+                ]
+
+            if target_information['status'] in unacceptable_statuses:
                 pass
-            
-            else:
 
-                self.file_queue.item(entry, values=( entry_data[0], self.locale['status-running'], entry_data[2] ))
-
-                tmp_file_name = (TEMPDIR + img + extension)
+            # Create a new file name.
+            def generate_filename():
+                temporary_filename = ( TEMPDIR + filename )
                 counter = 1
 
-                while os.path.isfile(tmp_file_name):
+                while os.path.isfile(temporary_filename):
                     counter += 1
-                    tmp_file_name = (TEMPDIR + img + str(counter) + extension)
+                    temporary_filename = ( TEMPDIR + filename + str(counter) )
 
-                cjpegc = (command.format(filename=tmp_file_name, targa=('-targa' if extension == '.tga' else '')) + ' ' + entry_data[2])
-                jpegtranc = (jpegtran_command + ' -outfile ' + tmp_file_name + ' ' + tmp_file_name)
+                return temporary_filename + '.jpg'
 
-                if self.debug:
-                    print(cjpegc)
-                    print(jpegtranc)
-                    print(entry_data)
+            temporary_filename = generate_filename()
 
-                subprocess.Popen(cjpegc, shell=True, stdout=subprocess.PIPE).wait()
-                subprocess.Popen(jpegtranc, shell=True, stdout=subprocess.PIPE).wait()
+            # Convert PNG to TGA
+            def png_to_tga(filename):
+                self.print_debug(f"Converting {filename} to TGA")
+                tga_filename = generate_filename()[:-4] + '.tga'
+                im = Image.open(filename); im.save(tga_filename)
+                return tga_filename
 
-                new_size = self.convert_size(os.stat(TEMPDIR + img + extension).st_size)
-                status = (self.locale['status-completed'] if not new_size == '0B' else self.locale['status-error'])
+            if extension == '.png':
+                change_status(target, target_information, 'status-converting')
+                target_information['path'] = png_to_tga(target_information['path'])
+                extension = '.tga'
 
-                self.file_queue.item(
-                        entry, 
-                        values=( 
-                            entry_data[0] + ' -> ' + new_size,
-                            status,
-                            tmp_file_name
-                            )
-                        )
+            change_status(target, target_information, 'status-running')
+
+            # Create full commands and execute them.
+            commands['cjpeg'] = commands['cjpeg'].format(
+                is_targa = ' -targa' if extension == '.tga' else '',
+                parameters = selected_cjpeg_parameters,
+                temporary_filename = temporary_filename,
+                original_filename = target_information['path']
+            )
+
+            if selected_jpegtran_parameters:
+                # Generate a new file name.
+                new_filename = generate_filename()
+
+                commands['jpegtran'] = commands['jpegtran'].format(
+                    parameters = selected_jpegtran_parameters,
+                    new_filename = new_filename,
+                    temporary_filename = temporary_filename
+                )
+
+
+            self.print_debug(f"Executing cjpeg command: \"{commands['cjpeg']}\" ")
+            subprocess.Popen(commands['cjpeg'], shell=True, stdout=subprocess.PIPE).wait()
+
+            if selected_jpegtran_parameters:
+                self.print_debug(f"Executing jpegtran command: \"{commands['jpegtran']}\"")
+                subprocess.Popen(commands['jpegtran'], shell=True, stdout=subprocess.PIPE).wait()
+                compressed_file = new_filename
+            else:
+                compressed_file = temporary_filename
+            
+            new_size = self.convert_size( os.stat(compressed_file).st_size )
+            status   = ('status-completed' if not new_size == '0B' else 'status-error')
+
+            change_status(
+                target, target_information, status,
+                size = ( f"{target_information['file_size']} -> {new_size}" ),
+                path = compressed_file
+                )
 
             if self.cancel_thread:
                 self.cancel_thread = False
@@ -753,6 +829,7 @@ class jpegzilla:
         self.buttons['run'].configure(state='normal')
         self.buttons['save'].configure(state='normal')
         self.cancel_button.configure(state='disabled')
+
 
     def convert_size(self, size_bytes):
         if size_bytes == 0:
@@ -770,7 +847,7 @@ if __name__ == '__main__':
 
             if sys.argv[1] in ['-v', '--version']:
 
-                print("Jpegzilla {}\nhttps://github.com/fabulouskana/jpegzilla".format(VER))
+                print("Jpegzilla {}\nhttps://github.com/canimar/jpegzilla".format(VER))
 
             elif sys.argv[1] in ['-h', '--help']:
 
