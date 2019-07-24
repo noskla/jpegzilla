@@ -53,7 +53,8 @@
 	"status-converting": "Konwertowanie",
 	"status-running": "Kompresowanie",
 	"status-new": "Nowy",
-    "status-error": "Błąd",
+	"status-error": "Błąd",
+	"status-import_again": "Zimportuj mnie od nowa",
 
 	"select-filetypes": {
 		"compatible-formats": "Kompatybilne formaty plików",

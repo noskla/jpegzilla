@@ -751,10 +751,13 @@ class jpegzilla:
 
             unacceptable_statuses = [
                 self.locale['status-completed'],
-                self.locale['status-error']
+                self.locale['status-error'],
+                self.locale['status-preparing'],
+                self.locale['status-import_again']
                 ]
 
             if target_information['status'] in unacceptable_statuses:
+                change_status(target, target_information, 'status-import_again')
                 continue
 
             # Create a new file name.

@@ -53,7 +53,8 @@
     "status-converting": "Converting",
 	"status-running": "Compressing",
 	"status-new": "New",
-    "status-error": "Error",
+	"status-error": "Error",
+	"status-import_again": "Import me again",
 
 	"select-filetypes": {
 		"compatible-formats": "Compatible file formats",
