@@ -755,7 +755,7 @@ class jpegzilla:
                 ]
 
             if target_information['status'] in unacceptable_statuses:
-                pass
+                continue
 
             # Create a new file name.
             def generate_filename():
@@ -785,7 +785,7 @@ class jpegzilla:
             change_status(target, target_information, 'status-running')
 
             # Create full commands and execute them.
-            commands['cjpeg'] = commands['cjpeg'].format(
+            cjpeg_command = commands['cjpeg'].format(
                 is_targa = ' -targa' if extension == '.tga' else '',
                 parameters = selected_cjpeg_parameters,
                 temporary_filename = temporary_filename,
@@ -796,19 +796,19 @@ class jpegzilla:
                 # Generate a new file name.
                 new_filename = generate_filename()
 
-                commands['jpegtran'] = commands['jpegtran'].format(
+                jpegtran_command = commands['jpegtran'].format(
                     parameters = selected_jpegtran_parameters,
                     new_filename = new_filename,
                     temporary_filename = temporary_filename
                 )
 
 
-            self.print_debug(f"Executing cjpeg command: \"{commands['cjpeg']}\" ")
-            subprocess.Popen(commands['cjpeg'], shell=True, stdout=subprocess.PIPE).wait()
+            self.print_debug(f"Executing cjpeg command: {cjpeg_command}")
+            subprocess.Popen(cjpeg_command, shell=True, stdout=subprocess.PIPE).wait()
 
             if selected_jpegtran_parameters:
-                self.print_debug(f"Executing jpegtran command: \"{commands['jpegtran']}\"")
-                subprocess.Popen(commands['jpegtran'], shell=True, stdout=subprocess.PIPE).wait()
+                self.print_debug(f"Executing jpegtran command: {jpegtran_command}")
+                subprocess.Popen(jpegtran_command, shell=True, stdout=subprocess.PIPE).wait()
                 compressed_file = new_filename
             else:
                 compressed_file = temporary_filename
