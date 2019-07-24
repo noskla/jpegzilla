@@ -13,7 +13,8 @@ import webbrowser
 from tkinter import messagebox
 from PIL import Image, ImageTk
 
-from conf import TEMPDIR, JZ_ICON_TKINTER, VER, OS, DOCS_URL, DEBUG, SUPPORTED_FORMATS
+from conf import (TEMPDIR, JZ_ICON_TKINTER, VER, OS, _here,
+DOCS_URL, DEBUG, SUPPORTED_FORMATS, MOZJPEG_PATH_OVERRIDE)
 
 class jpegzilla:
 
@@ -25,6 +26,7 @@ class jpegzilla:
         self.fgdis = '#555555' # Foreground color of disabled element
 
         self.debug = DEBUG
+        self.mozjpeg_path = ''
 
         first_run = False
 
@@ -34,7 +36,7 @@ class jpegzilla:
         else:
             _thisfile = __file__
 
-        locale_path = os.path.dirname(os.path.abspath(_thisfile).replace('\\', '/')) + '/locale/'
+        locale_path = _here + '/locale/'
 
         # Load locale file.
 
@@ -47,6 +49,94 @@ class jpegzilla:
 
         except FileNotFoundError:
             first_run = True
+
+
+        # Test MozJPEG
+        if not MOZJPEG_PATH_OVERRIDE:
+
+            if OS == 'Windows':
+                path_env = os.getenv('PATH').split(';')
+                required_files = ['cjpeg.exe', 'libjpeg-*.dll', 'jpegtran.exe']
+                counter = 0
+
+                self.print_debug('Searching in local directory...')
+                for file in required_files:
+                    counter = 0
+
+                    if glob.glob(file):
+
+                        self.print_debug(f"Found {file} in local directory.")
+
+                        if counter >= len(required_files): 
+                            self.mozjpeg_path = _here
+                            break
+                        else:
+                            counter += 1
+
+
+                if not counter >= len(required_files):
+                    self.print_debug('Missing files in local directory, trying to find in PATH')
+
+                    for path in path_env:
+
+                        # Replace Windows backslashes with forward slashes.
+                        path = path.replace('\\', '/')
+                            
+                        # Add last slash if it's missing.
+                        path += ( '/' if path[-1:] == '' else '' )
+
+                        for file in required_files:
+                                
+                            counter = 0
+                            if os.path.isfile(path + file):
+                                counter += 1
+                                self.print_debug(f"Found {file} in PATH.")
+                                
+                            if counter >= len(required_files): 
+                                self.mozjpeg_path = path
+                                break
+
+                        if not counter >= len(required_files):
+                            messagebox.showerror(
+                                self.locale['title-error'],
+                                self.locale['mozjpeg-file-missing-error']
+                            )
+                            sys.exit()
+
+            else: # Linux
+
+                self.print_debug('Searching for MozJPEG')
+
+                possible_paths = [
+                    '/opt/mozjpeg/', '/opt/mozjpeg/bin/', '/opt/libmozjpeg/bin/',
+                    '/usr/local/bin/', '/usr/bin/'
+                ]
+
+                required_binaries = ['cjpeg', 'jpegtran']
+
+                while not self.mozjpeg_path:
+
+                    for path in possible_paths:
+                        counter = 0
+
+                        for binary in required_binaries:
+                            if os.path.isfile(path + binary):
+                                counter += 1
+
+                        if counter >= len(required_binaries):
+                            self.print_debug(f"Found MozJPEG binaries in {path}")
+                            self.mozjpeg_path = path
+                            break
+
+                    if len(required_binaries) > counter:
+                        messagebox.showerror(self.locale['title'], self.locale['mozjpeg-file-missing-error'])
+                        sys.exit()
+                    
+
+        else: # MOZJPEG_PATH_OVERRIDE
+
+            self.print_warning("Running with MOZJPEG_PATH_OVERRIDE, make sure files are inside specified directory.")
+            self.mozjpeg_path = MOZJPEG_PATH_OVERRIDE
 
 
         if not first_run:
@@ -127,48 +217,6 @@ class jpegzilla:
 
             first_run_setup.mainloop()
 
-        # Check if Mozjpeg is available.
-        if OS == 'Windows':
-
-            win_paths = os.getenv('PATH').split(';')
-
-            if os.path.isfile('./cjpeg.exe'):
-                print(self.locale['mozjpeg-found-local-dir'])
-                if not glob.glob('./libjpeg-*.dll'):
-                    messagebox.showerror(self.locale['title-error'], self.locale['mozjpeg-dll-missing-error'])
-                pass
-
-            elif os.path.isfile('./jpegzilla-mozjpeg_in_path'):
-                pass
-
-            else:
-
-                print(self.locale['mozjpeg-search-in-path'])
-                mozjpeg_found = False
-
-                for path in win_paths:
-                    path = path.replace('\\', '/') + ('/' if path[-1:] == '' else '')
-                    if os.path.isfile(path + 'cjpeg.exe' ) and os.path.isfile(path + 'jpegtran.exe'):
-                        print(self.locale['mozjpeg-found-path'].format(path=path))
-                        mozjpeg_found = True
-                        f = open('./jpegzilla-mozjpeg_in_path', 'w')
-                        f.write(path)
-                        f.close()
-                        break
-
-                if not mozjpeg_found:
-                    print(self.locale['mozjpeg-not-found-error'])
-                    messagebox.showerror(self.locale['title-error'], self.locale['mozjpeg-not-found-error'])
-                    sys.exit()
-
-
-
-        else:
-
-            if not os.path.isfile('/usr/bin/cjpeg') and not os.path.isfile('/opt/mozjpeg/cjpeg'):
-                print(self.locale['mozjpeg-not-found-error'])
-                messagebox.showerror(self.locale['title-error'], self.locale['mozjpeg-not-found-error'])
-                sys.exit()
 
         self.cancel_thread = False
 
@@ -510,14 +558,24 @@ class jpegzilla:
 
         self.root.mainloop()
 
+
     def print_debug(self, message):
 
         if not self.debug:
             return
 
-        prefix = ( "\033[33m[DEBUG]\033[0m " if (not OS == 'Windows') else '[DEBUG] ' )
+        prefix = ( "\033[35m[DEBUG]\033[0m " if (not OS == 'Windows') else '[DEBUG] ' )
         print(prefix + message)
         
+    def print_warning(self, message):
+
+        prefix = ( "\033[33m[WARNING]\033[0m " if (not OS == 'Windows') else '[WARNING] ' )
+        print(prefix + message)
+
+    def print_error(self, message):
+
+        prefix = ( "\033[31m[WARNING]\033[0m " if (not OS == 'Windows') else '[WARNING] ' )
+        print(prefix + message)
 
 
     def remove_files(self):
@@ -654,8 +712,8 @@ class jpegzilla:
 
         # Prepare commands
         commands = {
-            'cjpeg'   : "cjpeg{is_targa} {parameters} -outfile \"{temporary_filename}\" \"{original_filename}\"",
-            'jpegtran': "jpegtran {parameters} -outfile \"{new_filename}\" \"{temporary_filename}\""
+            'cjpeg'   : "'{mozjpeg_path}cjpeg'{is_targa} {parameters} -outfile \"{temporary_filename}\" \"{original_filename}\"",
+            'jpegtran': "'{mozjpeg_path}jpegtran' {parameters} -outfile \"{new_filename}\" \"{temporary_filename}\""
         }
 
         non_checkbutton_parameters = [
@@ -789,6 +847,7 @@ class jpegzilla:
 
             # Create full commands and execute them.
             cjpeg_command = commands['cjpeg'].format(
+                mozjpeg_path = self.mozjpeg_path,
                 is_targa = ' -targa' if extension == '.tga' else '',
                 parameters = selected_cjpeg_parameters,
                 temporary_filename = temporary_filename,
@@ -800,6 +859,7 @@ class jpegzilla:
                 new_filename = generate_filename()
 
                 jpegtran_command = commands['jpegtran'].format(
+                    mozjpeg_path = self.mozjpeg_path,
                     parameters = selected_jpegtran_parameters,
                     new_filename = new_filename,
                     temporary_filename = temporary_filename

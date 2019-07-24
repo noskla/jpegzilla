@@ -22,10 +22,17 @@ VER = '1.2.0-pre'
 JZ_ICON_SETUP = ('icons/icon-96x96.ico' if OS == 'Windows' else 'icons/icon-96x96.gif')
 JZ_ICON_TKINTER = (_here + '/icons/icon-96x96.gif')
 
-DEBUG = False
+DEBUG = True
 DOCS_URL = 'https://canimar.github.io/jpegzilla/'
 
 SUPPORTED_FORMATS = ['*.jpg', '*.jpeg', '*.tga', '*.png']
+
+# Put full path to directory containing all required libraries and executables
+# (make sure to use forward slashes)
+# Examples:
+#   /home/user/Desktop/mozjpeg/
+#   C:/Users/user/Desktop/mozjpeg/
+MOZJPEG_PATH_OVERRIDE = '/usr/bin/'
 
 # --- --- --- --- --- ---
 
