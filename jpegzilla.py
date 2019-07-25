@@ -14,7 +14,8 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 
 from conf import (TEMPDIR, JZ_ICON_TKINTER, VER, OS, _here,
-DOCS_URL, DEBUG, SUPPORTED_FORMATS, MOZJPEG_PATH_OVERRIDE)
+DOCS_URL, DEBUG, SUPPORTED_FORMATS, MOZJPEG_PATH_OVERRIDE,
+_thisfile, _iscompiled)
 
 class jpegzilla:
 
@@ -29,12 +30,6 @@ class jpegzilla:
         self.mozjpeg_path = ''
 
         first_run = False
-
-        # Get current file.
-        if (getattr(sys, 'frozen', False)):
-            _thisfile = sys.executable
-        else:
-            _thisfile = __file__
 
         locale_path = _here + '/locale/'
 
@@ -229,6 +224,64 @@ class jpegzilla:
         self._icon = tkinter.PhotoImage(file=JZ_ICON_TKINTER)
         self.root.tk.call('wm', 'iconphoto', self.root._w, self._icon)
 
+        # Menu bar
+        def about():
+            about_window = tkinter.Toplevel(self.root)
+            about_window.wm_title(self.locale['about-title'])
+            about_window.geometry('300x340')
+
+            program_name = tkinter.Label(about_window,
+
+                text='Jpegzilla ' + VER + '\n' +
+                    self.locale['about-credit'].format(
+                        author = 'Jarosław "_kana" C.',
+                        dependencies = 'MozJPEG, libjpeg-turbo,\nPython Imaging Library & cx_Freeze\n'
+                    )
+
+                )
+
+            program_name.pack(side="top", fill="both", expand=True)
+
+        def reset():
+            os.remove(_here + '/locale/locale.txt')
+            self.root.destroy()
+            self.__init__()
+
+        def update():
+
+            self.print_debug('Running updater...')
+
+            if _iscompiled:
+                command = ['./updater']
+
+            else:
+                if OS == 'Windows':
+                    command = ['py', 'updater.py']
+                else:
+                    command = ['python3', 'updater.py']
+
+            subprocess.Popen(command)
+            sys.exit()
+
+        self.menubar = tkinter.Menu(self.root)
+
+        menubar_file_cascade = tkinter.Menu(self.menubar, tearoff=0)
+        menubar_file_cascade.add_command(label=self.locale['menu-import'], command=lambda:self.select_files())
+
+        menubar_tools_cascade = tkinter.Menu(self.menubar, tearoff=0)
+        menubar_tools_cascade.add_command(label=self.locale['menu-reset'], command=lambda:reset())
+        menubar_tools_cascade.add_command(label=self.locale['menu-updater'], command=lambda:update())
+
+        menubar_help_cascade = tkinter.Menu(self.menubar, tearoff=0)
+        menubar_help_cascade.add_command(label=self.locale['menu-about'], command=lambda:about())
+        menubar_help_cascade.add_command(label=self.locale['menu-website'], command=lambda:webbrowser.open_new(DOCS_URL))
+
+        self.menubar.add_cascade(label=self.locale['menu-file'], menu=menubar_file_cascade)
+        self.menubar.add_cascade(label=self.locale['menu-tools'], menu=menubar_tools_cascade)
+        self.menubar.add_cascade(label=self.locale['menu-help'], menu=menubar_help_cascade)
+
+        self.root.configure(menu=self.menubar)
+
         # Primary buttons
 
         self.buttons = {
@@ -261,20 +314,6 @@ class jpegzilla:
                         overrelief='flat',
                         font='Arial 10 bold',
                         command=lambda:self.save_all()
-                        ),
-                    'help': tkinter.Button(
-                        self.root, 
-                        text=self.locale['help-button'], 
-                        background=self.bg, 
-                        fg=self.fg, 
-                        bd=0, 
-                        disabledforeground=self.fgdis, 
-                        highlightbackground=self.bg, 
-                        highlightthickness=0, 
-                        relief='flat', 
-                        overrelief='flat',
-                        font='Arial 10 bold',
-                        command=lambda:webbrowser.open_new(DOCS_URL)
                         ),
                     'import': tkinter.Button(
                         self.root, 

@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# -*- config: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Jpegzilla
 # A simple, cross-platform and lightweight graphical user interface for MozJPEG.
 # https://github.com/canimar/jpegzilla
@@ -8,8 +8,10 @@ import os, platform, sys
 
 if (getattr(sys, 'frozen', False)):
     _thisfile = sys.executable
+    _iscompiled = True
 else:
     _thisfile = __file__
+    _iscompiled = False
 
 _here = os.path.dirname(os.path.abspath(_thisfile.replace('\\', '/')))
 
@@ -22,7 +24,7 @@ VER = '1.2.0-pre'
 JZ_ICON_SETUP = ('icons/icon-96x96.ico' if OS == 'Windows' else 'icons/icon-96x96.gif')
 JZ_ICON_TKINTER = (_here + '/icons/icon-96x96.gif')
 
-DEBUG = True
+DEBUG = False
 DOCS_URL = 'https://canimar.github.io/jpegzilla/'
 
 SUPPORTED_FORMATS = ['*.jpg', '*.jpeg', '*.tga', '*.png']
@@ -32,7 +34,7 @@ SUPPORTED_FORMATS = ['*.jpg', '*.jpeg', '*.tga', '*.png']
 # Examples:
 #   /home/user/Desktop/mozjpeg/
 #   C:/Users/user/Desktop/mozjpeg/
-MOZJPEG_PATH_OVERRIDE = '/usr/bin/'
+MOZJPEG_PATH_OVERRIDE = ''
 
 # --- --- --- --- --- ---
 

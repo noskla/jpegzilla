@@ -12,6 +12,7 @@
 	"save-all-title": "Select directory to save compressed files to",
 	"select-files-title": "Select which files to import",
 	"title-error": "Jpegzilla - Error",
+	"about-title": "About Jpegzilla",
 
 	"3": "-- TOP BUTTONS --",
 	"run-button": "COMPRESS",
@@ -57,8 +58,36 @@
 		"all-files": "All files"
 	},
 
-	"": "-- PREVIEW --",
-	"open-in-image-viewer": "Open in system default Image Viewer"
+	"6": "-- PREVIEW --",
+	"open-in-image-viewer": "Open in system default Image Viewer",
+
+	"7": "-- MENU BAR --",
+	"menu-file": "File",
+	"menu-edit": "Edit",
+	"menu-tools": "Tools",
+	"menu-help": "Help",
+
+	"menu-import": "Import",
+
+	"menu-reset": "Reconfigure",
+	"menu-updater": "Check for updates",
+
+	"menu-about": "About",
+	"menu-website": "Website",
+
+	"8": "-- ABOUT WINDOW --",
+	"about-license": "License",
+	"about-source": "Source code",
+	"about-credit": "Made by {author}\nThanks to the creators of {dependencies} for making it possible.",
+
+	"9": "-- UPDATER --",
+	"updater-title": "Updating Jpegzilla",
+	"updater-initializing": "Initializing...",
+	"updater-checking": "Checking for updates...",
+	"updater-end-before": "Ended before finishing, reason: {reason}",
+	"updater-downloading": "Downloading...",
+	"updater-installing": "Installing...",
+	"updater-done": "Done, you are safe to\nclose this window and start\nJpegzilla."
 
 }
 

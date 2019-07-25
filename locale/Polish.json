@@ -57,7 +57,36 @@
 		"all-files": "Wszystkie pliki"
 	},
 
-	"": "-- PODGLĄD --",
-	"open-in-image-viewer": "Otwórz w domyślnej przeglądarce zdjęć"
+	"6": "-- PODGLĄD --",
+	"open-in-image-viewer": "Otwórz w domyślnej przeglądarce zdjęć",
+
+
+	"7": "-- PASEK MENU --",
+	"menu-file": "Plik",
+	"menu-edit": "Edycja",
+	"menu-tools": "Narzędzia",
+	"menu-help": "Pomoc",
+
+	"menu-import": "Importuj",
+
+	"menu-reset": "Przeinstaluj",
+	"menu-updater": "Sprawdź aktualizacje",
+
+	"menu-about": "O programie",
+	"menu-website": "Strona www",
+
+	"8": "-- OKNO 'O PROGRAMIE' --",
+	"about-license": "Licencja",
+	"about-source": "Kod źródłowy",
+	"about-credit": "Stworzone przez {author}\nPodziękowania dla deweloperów {dependencies}, dzięki którym ten projekt jest możliwy.",
+
+	"9": "-- AKTUALIZATOR --",
+	"updater-title": "Aktualizowanie Jpegzilli",
+	"updater-initializing": "Inicjalizacja..",
+	"updater-checking": "Sprawdzanie aktualizacji...",
+	"updater-end-before": "Zakończono bez powodzenia, przyczyna: {reason}",
+	"updater-downloading": "Pobieranie...",
+	"updater-installing": "Instalowanie...",
+	"updater-done": "Sukces, możesz\nteraz zamknąć to okno i włączyć Jpegzillę."
 
 }
