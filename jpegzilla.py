@@ -35,6 +35,7 @@ class jpegzilla:
 
         # Load locale file.
 
+        self.print_debug('Loading locales...')
         try:
             with open(locale_path + 'locale.txt', 'r') as f:
                 locale_code = f.read().rstrip('\n')
@@ -45,6 +46,88 @@ class jpegzilla:
         except FileNotFoundError:
             first_run = True
 
+
+        if not first_run:
+
+            if not os.path.isfile(locale_path + locale_code + '.json'):
+                print('Locale with given language code doesn\'t exist. Fallback to English...')
+                locale_code = 'English'
+
+            with open(locale_path + locale_code + '.json', 'r') as f:
+                self.locale = json.load(f)
+                f.close()
+        
+        else:
+
+            def set_settings(lang, setup_window):
+
+                if lang == 'Select a language':
+                    return
+
+                with open(locale_path + lang + '.json', 'r') as f:
+                    self.locale = json.load(f)
+                    f.close()
+
+                with open(locale_path + 'locale.txt', 'w') as f:
+                    f.write(lang)
+                    f.close()
+                
+                setup_window.destroy()
+
+
+            raw_languages_list = sorted(os.listdir(locale_path))
+            languages_list = []
+
+            for lang in raw_languages_list:
+                if lang.endswith('.json'):
+                    languages_list.append(lang[:-5])
+
+            first_run_setup = tkinter.Tk()
+            first_run_setup.geometry('300x180')
+            first_run_setup.title('Jpegzilla - First run setup')
+            first_run_setup.resizable(False, False)
+            self._icon = tkinter.PhotoImage(file=JZ_ICON_TKINTER)
+            first_run_setup.tk.call('wm', 'iconphoto', first_run_setup._w, self._icon)
+            first_run_setup.configure(bg=self.bg)
+            first_run_setup.protocol('WM_DELETE_WINDOW', lambda:sys.exit())
+
+            language = tkinter.StringVar(first_run_setup)
+            language.set('Select a language')
+
+            first_run_setup_skip = tkinter.Button(
+                    first_run_setup,
+                    text='Skip setup (Will use defaults)',
+                    relief='flat',
+                    bg=self.bg,
+                    fg=self.fg,
+                    command=lambda:set_settings('English', first_run_setup)
+                    )
+            first_run_setup_done = tkinter.Button(
+                    first_run_setup,
+                    text='Accept settings',
+                    relief='flat',
+                    bg=self.bg,
+                    fg=self.fg,
+                    command=lambda:set_settings(language.get(), first_run_setup)
+                    )
+            # pylint gives here an no-value-for-parameter error, ignore it
+            first_run_setup_lang = tkinter.OptionMenu(first_run_setup, language, *languages_list)
+            first_run_setup_text = tkinter.Label(
+                    first_run_setup,
+                    bg=self.bg,
+                    fg=self.fg,
+                    text='Thanks for using Jpegzilla!\nPlease choose a language you wanna use\nor click "SKIP".\n'
+                    )
+
+            first_run_setup_text.pack()
+            first_run_setup_lang.pack()
+            first_run_setup_skip.pack(fill='x', side='bottom')
+            first_run_setup_done.pack(fill='x', side='bottom')
+
+            first_run_setup.mainloop()
+
+
+        self.cancel_thread = False
 
         # Test MozJPEG
         if not MOZJPEG_PATH_OVERRIDE:
@@ -132,89 +215,6 @@ class jpegzilla:
 
             self.print_warning("Running with MOZJPEG_PATH_OVERRIDE, make sure files are inside specified directory.")
             self.mozjpeg_path = MOZJPEG_PATH_OVERRIDE
-
-
-        if not first_run:
-
-            if not os.path.isfile(locale_path + locale_code + '.json'):
-                print('Locale with given language code doesn\'t exist. Fallback to English...')
-                locale_code = 'English'
-
-            with open(locale_path + locale_code + '.json', 'r') as f:
-                self.locale = json.load(f)
-                f.close()
-        
-        else:
-
-            def set_settings(lang, setup_window):
-
-                if lang == 'Select a language':
-                    return
-
-                with open(locale_path + lang + '.json', 'r') as f:
-                    self.locale = json.load(f)
-                    f.close()
-
-                with open(locale_path + 'locale.txt', 'w') as f:
-                    f.write(lang)
-                    f.close()
-                
-                setup_window.destroy()
-
-
-            raw_languages_list = sorted(os.listdir(locale_path))
-            languages_list = []
-
-            for lang in raw_languages_list:
-                if lang.endswith('.json'):
-                    languages_list.append(lang[:-5])
-
-            first_run_setup = tkinter.Tk()
-            first_run_setup.geometry('300x180')
-            first_run_setup.title('Jpegzilla - First run setup')
-            first_run_setup.resizable(False, False)
-            self._icon = tkinter.PhotoImage(file=JZ_ICON_TKINTER)
-            first_run_setup.tk.call('wm', 'iconphoto', first_run_setup._w, self._icon)
-            first_run_setup.configure(bg=self.bg)
-            first_run_setup.protocol('WM_DELETE_WINDOW', lambda:sys.exit())
-
-            language = tkinter.StringVar(first_run_setup)
-            language.set('Select a language')
-
-            first_run_setup_skip = tkinter.Button(
-                    first_run_setup,
-                    text='Skip setup (Will use defaults)',
-                    relief='flat',
-                    bg=self.bg,
-                    fg=self.fg,
-                    command=lambda:set_settings('English', first_run_setup)
-                    )
-            first_run_setup_done = tkinter.Button(
-                    first_run_setup,
-                    text='Accept settings',
-                    relief='flat',
-                    bg=self.bg,
-                    fg=self.fg,
-                    command=lambda:set_settings(language.get(), first_run_setup)
-                    )
-            # pylint gives here an no-value-for-parameter error, ignore it
-            first_run_setup_lang = tkinter.OptionMenu(first_run_setup, language, *languages_list)
-            first_run_setup_text = tkinter.Label(
-                    first_run_setup,
-                    bg=self.bg,
-                    fg=self.fg,
-                    text='Thanks for using Jpegzilla!\nPlease choose a language you wanna use\nor click "SKIP".\n'
-                    )
-
-            first_run_setup_text.pack()
-            first_run_setup_lang.pack()
-            first_run_setup_skip.pack(fill='x', side='bottom')
-            first_run_setup_done.pack(fill='x', side='bottom')
-
-            first_run_setup.mainloop()
-
-
-        self.cancel_thread = False
 
         # Create root window.
         self.root = tkinter.Tk()
