@@ -751,8 +751,8 @@ class jpegzilla:
 
         # Prepare commands
         commands = {
-            'cjpeg'   : "'{mozjpeg_path}cjpeg'{is_targa} {parameters} -outfile \"{temporary_filename}\" \"{original_filename}\"",
-            'jpegtran': "'{mozjpeg_path}jpegtran' {parameters} -outfile \"{new_filename}\" \"{temporary_filename}\""
+            'cjpeg'   : '"{mozjpeg_path}cjpeg"{is_targa} {parameters} -outfile "{temporary_filename}" "{original_filename}"',
+            'jpegtran': '"{mozjpeg_path}jpegtran" {parameters} -outfile "{new_filename}" "{temporary_filename}"'
         }
 
         non_checkbutton_parameters = [
