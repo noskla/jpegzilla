@@ -14,6 +14,11 @@ jzexe = Executable(
         icon = JZ_ICON_SETUP
         )
 
+updater = Executable(
+        'updater.py',
+        base = ('Win32GUI' if os.name == 'nt' else None)
+        )
+
 include_files = [
     './locale/',
     './icons/'
@@ -46,6 +51,6 @@ setup(
             'includes': ['tkinter']
             }
         },
-    executables = [jzexe]
+    executables = [jzexe, updater]
 
 )

@@ -197,6 +197,7 @@ class jpegzilla:
                     fg=self.fg,
                     command=lambda:set_settings(language.get(), first_run_setup)
                     )
+            # pylint gives here an no-value-for-parameter error, ignore it
             first_run_setup_lang = tkinter.OptionMenu(first_run_setup, language, *languages_list)
             first_run_setup_text = tkinter.Label(
                     first_run_setup,
@@ -962,11 +963,7 @@ if __name__ == '__main__':
 
             sys.exit()
 
-        else:
-            raise IndexError
-
     except IndexError:
         pass
 
     jz = jpegzilla()
-
