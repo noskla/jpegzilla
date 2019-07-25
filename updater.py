@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Jpegzilla
 # A simple, cross-platform and lightweight graphical user interface for MozJPEG.
-# https://github.com/canimar/jpegzilla
+# https://github.com/nosklajpegzilla
 
 from conf import VER, _thisfile, _here, JZ_ICON_TKINTER, OS, TEMPDIR
 
@@ -47,7 +47,7 @@ def check_for_updates(current_version, label):
     
     response = requests.get('https://api.github.com/repos/canimar/jpegzilla/releases')
     if not response.status_code == 200:
-        return [False, str(response.status_code) + ' ' + response.status_text]
+        return {'status': False, 'msg': str(response.status_code) + ' ' + response.status_text}
     
     newest_version_str = response.json()[0]['tag_name']
     is_pre_release = ('-pre' in newest_version_str)
@@ -72,7 +72,7 @@ def check_for_updates(current_version, label):
     if not git_major > loc_major:
         if not git_middle > loc_middle:
             if not git_minor > loc_minor:
-                return [False, 'No updates available.']
+                return {'status': False, 'msg': 'No updates available.'}
 
     label.configure(text=LOCALE['updater-downloading'])
     x86_64 = (sys.maxsize > 2**32)
@@ -91,7 +91,7 @@ def check_for_updates(current_version, label):
                 download_url = option['browser_download_url']
                 break
 
-    return [True, download_url]
+    return {'status': True, 'url': download_url}
 
 
 def install_update(url):
@@ -100,6 +100,7 @@ def install_update(url):
 
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
+        print('\nDownloading to '+ TEMPDIR + local_filename)
         with open(TEMPDIR + local_filename, 'wb') as f:
             for chunk in r.iter_content(chunk_size=4096):
                 if chunk:
@@ -121,11 +122,17 @@ def install_update(url):
         pass
 
     for f in os.listdir(TEMPDIR + 'newver/jpegzilla/'):
+        print('Current file: ' + _here + f)
         if os.path.isdir(f):
+
+            print(f + ' is a directory')
             if not os.path.isdir(_here + f):
                 os.mkdir(_here + f)
+
+
             for sf in os.listdir(f):
                 shutil.move(TEMPDIR + f + '/' + sf, _here + '/' + f)
+
         else:
             shutil.move(TEMPDIR + f, _here)
 
@@ -134,12 +141,13 @@ def update(version, label, bar):
 
     label.configure(text=LOCALE['updater-checking'])
     result = check_for_updates(version, label)
-    if not result[0]:
-        label.configure(text=LOCALE['updater-end-before'].format(reason=result[1]))
+    print(result)
+    if not result['status']:
+        label.configure(text=LOCALE['updater-end-before'].format(reason=result['msg']))
     else:
         label.configure(text=LOCALE['updater-installing'])
-        install_update(result[1])
-    label.configure(text=LOCALE['updater-done'])
+        install_update(result['url'])
+        label.configure(text=LOCALE['updater-done'])
     bar.stop()
 
 

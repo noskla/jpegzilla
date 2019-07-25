@@ -84,7 +84,7 @@
 	"updater-title": "Updating Jpegzilla",
 	"updater-initializing": "Initializing...",
 	"updater-checking": "Checking for updates...",
-	"updater-end-before": "Ended before finishing, reason: {reason}",
+	"updater-end-before": "Ended before finishing, reason:\n{reason}",
 	"updater-downloading": "Downloading...",
 	"updater-installing": "Installing...",
 	"updater-done": "Done, you are safe to\nclose this window and start\nJpegzilla."
