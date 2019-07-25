@@ -139,7 +139,6 @@ class jpegzilla:
 
                 self.print_debug('Searching in local directory...')
                 for file in required_files:
-                    counter = 0
 
                     if glob.glob(file):
 

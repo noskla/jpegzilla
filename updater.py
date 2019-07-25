@@ -7,8 +7,9 @@
 from conf import VER, _thisfile, _here, JZ_ICON_TKINTER, OS, TEMPDIR
 
 import threading, tkinter, tkinter.ttk, json, sys, requests, zipfile, os, shutil
+from multiprocessing import Queue
 
-VER = '1.0.0'
+
 locale_path = _here + '/locale/'
 
 try:

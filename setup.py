@@ -5,7 +5,7 @@ from conf import VER, JZ_ICON_SETUP
 try:
     from cx_Freeze import setup, Executable
 except ImportError:
-    print('You have to install cx_freeze from pip or your distro repository.')
+    print('You have to install cx_Freeze from pip or your distro repository.')
 
 
 jzexe = Executable(
@@ -45,10 +45,10 @@ setup(
         'build_exe': {
             'include_files': include_files,
             'packages': [
-                'glob', 'sys', 'threading', 'shutil',
+                'glob', 'sys', 'threading', 'shutil', 'requests',
                 'platform', 'ntpath', 'subprocess', 'PIL', 're'
                 ],
-            'includes': ['tkinter']
+            'includes': ['tkinter', 'idna.idnadata']
             }
         },
     executables = [jzexe, updater]
