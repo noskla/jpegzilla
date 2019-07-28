@@ -19,14 +19,16 @@ _thisfile, _iscompiled)
 
 class jpegzilla:
 
-    def __init__(self):
+    def __init__(self, debug_arg):
 
         # Colors
         self.bg = '#FEFEFE' # Background color
         self.fg = '#000000' # Foreground color
         self.fgdis = '#555555' # Foreground color of disabled element
 
-        self.debug = DEBUG
+        self.debug = (debug_arg if debug_arg else DEBUG)
+        self.print_debug('Running in debug mode.')
+
         self.mozjpeg_path = ''
 
         first_run = False
@@ -245,7 +247,7 @@ class jpegzilla:
         def reset():
             os.remove(_here + '/locale/locale.txt')
             self.root.destroy()
-            self.__init__()
+            self.__init__(self.debug)
 
         def update():
 
@@ -944,6 +946,8 @@ class jpegzilla:
 
 if __name__ == '__main__':
     
+    debug = False
+
     try:
         if sys.argv[1].startswith('-'):
 
@@ -955,6 +959,13 @@ if __name__ == '__main__':
 
                 print("Run program by just typing \"jpegzilla\" or by running script without any arguments.")
                 print("      -v, --version  - Display version information.")
+                print("      -d, --debug    - Show debug information in console.")
+                print("      -h, --help     - Show this message.")
+
+            elif sys.argv[1] in ['-d', '--debug']:
+
+                debug = True
+                raise IndexError
 
             else:
 
@@ -965,4 +976,4 @@ if __name__ == '__main__':
     except IndexError:
         pass
 
-    jz = jpegzilla()
+    jz = jpegzilla(debug)
