@@ -142,10 +142,20 @@ def install_update(url):
 
 
             for sf in os.listdir(f):
-                shutil.move(TEMPDIR + f + '/' + sf, _here + '/' + f)
+                print(TEMPDIR + 'newver/jpegzilla/' + f + '/' + sf + ' --> ' + _here + '/')
+
+                if os.path.isfile(_here + '/' + f + '/' + sf):
+                    print('Deleting: ' + _here + '/' + f + '/' + sf)
+                    os.remove(_here + '/' + f + '/' + sf)
+                
+                try:
+                    shutil.move(TEMPDIR + 'newver/jpegzilla/' + f + '/' + sf, _here + '/' + f + '/')
+                except FileNotFoundError:
+                    print(TEMPDIR + 'newver/jpegzilla/' + f + '/' + sf + ' not found. Ignoring...')
 
         else:
-            shutil.move(TEMPDIR + f, _here)
+            print(TEMPDIR + 'newver/jpegzilla' + f + ' --> ' + _here)
+            shutil.move(TEMPDIR + 'newver/jpegzilla/' + f, _here)
 
 
 def update(version, label, bar):
