@@ -2,15 +2,23 @@
 # -*- coding: utf-8 -*-
 # Jpegzilla
 # A simple, cross-platform and lightweight graphical user interface for MozJPEG.
-# https://github.com/nosklajpegzilla
+# https://github.com/noskla/jpegzilla
 
-from conf import VER, _thisfile, _here, JZ_ICON_TKINTER, OS, TEMPDIR
+from conf import VER, _thisfile, _here, JZ_ICON_TKINTER, OS, TEMPDIR, DEBUG
 
 import threading, tkinter, tkinter.ttk, json, sys, requests, zipfile, os, shutil
 from multiprocessing import Queue
 
 
 locale_path = _here + '/locale/'
+
+try:
+    if sys.argv[1] in ['-d', '--debug']:
+        _debug = True
+    else:
+        raise IndexError
+except IndexError:
+    _debug = DEBUG
 
 try:
 
@@ -100,7 +108,8 @@ def install_update(url):
 
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
-        print('\nDownloading to '+ TEMPDIR + local_filename)
+        if DEBUG:
+            print('\nDownloading to '+ TEMPDIR + local_filename)
         with open(TEMPDIR + local_filename, 'wb') as f:
             for chunk in r.iter_content(chunk_size=4096):
                 if chunk:
@@ -122,10 +131,12 @@ def install_update(url):
         pass
 
     for f in os.listdir(TEMPDIR + 'newver/jpegzilla/'):
-        print('Current file: ' + _here + f)
+        if DEBUG:
+            print('Current file: ' + _here + f)
         if os.path.isdir(f):
-
-            print(f + ' is a directory')
+            
+            if DEBUG:
+                print(f + ' is a directory')
             if not os.path.isdir(_here + f):
                 os.mkdir(_here + f)
 
@@ -141,7 +152,8 @@ def update(version, label, bar):
 
     label.configure(text=LOCALE['updater-checking'])
     result = check_for_updates(version, label)
-    print(result)
+    if DEBUG:
+        print(result)
     if not result['status']:
         label.configure(text=LOCALE['updater-end-before'].format(reason=result['msg']))
     else:

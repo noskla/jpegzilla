@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Jpegzilla
 # A simple, cross-platform and lightweight graphical user interface for MozJPEG.
-# https://github.com/canimar/jpegzilla
+# https://github.com/noskla/jpegzilla
 
 import sys, ntpath, os, subprocess, threading, json
 import math, platform, shutil, glob, re
@@ -261,6 +261,11 @@ class jpegzilla:
                     command = ['py', 'updater.py']
                 else:
                     command = ['python3', 'updater.py']
+
+            if self.debug:
+                command.append('--debug')
+
+            self.print_debug(f"Running: {command}")
 
             subprocess.Popen(command)
             sys.exit()
