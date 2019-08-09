@@ -232,6 +232,12 @@ class jpegzilla:
             about_window.wm_title(self.locale['about-title'])
             about_window.geometry('300x340')
 
+            icon = (_here + '/icons/icon-256x256.png')
+            image = ImageTk.PhotoImage(Image.open(icon))
+            img_panel = tkinter.Label(about_window, image=image)
+            img_panel.image = image
+            img_panel.pack(side="top", fill="both", expand="yes")
+
             program_name = tkinter.Label(about_window,
 
                 text='Jpegzilla ' + VER + '\n' +
@@ -254,16 +260,13 @@ class jpegzilla:
             self.print_debug('Running updater...')
 
             if _iscompiled:
-                command = ['./updater']
+                command = ['./updater', '--gui']
 
             else:
                 if OS == 'Windows':
-                    command = ['py', 'updater.py']
+                    command = ['py', 'updater.py', '--gui']
                 else:
-                    command = ['python3', 'updater.py']
-
-            if self.debug:
-                command.append('--debug')
+                    command = ['python3', 'updater.py', '--gui']
 
             self.print_debug(f"Running: {command}")
 
