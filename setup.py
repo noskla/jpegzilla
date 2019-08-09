@@ -48,7 +48,10 @@ setup(
                 'glob', 'sys', 'threading', 'shutil', 'requests',
                 'platform', 'ntpath', 'subprocess', 'PIL', 're'
                 ],
-            'includes': ['tkinter', 'idna.idnadata']
+            'includes': [
+				'tkinter', 'idna.idnadata', 'packaging.specifiers',
+				'packaging.requirements'
+				]
             }
         },
     executables = [jzexe, updater]
