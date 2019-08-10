@@ -961,7 +961,7 @@ if __name__ == '__main__':
 
             if sys.argv[1] in ['-v', '--version']:
 
-                print("Jpegzilla {}\nhttps://github.com/canimar/jpegzilla".format(VER))
+                print("Jpegzilla {}\nhttps://github.com/noskla/jpegzilla".format(VER))
 
             elif sys.argv[1] in ['-h', '--help']:
 

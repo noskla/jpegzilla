@@ -25,7 +25,7 @@ JZ_ICON_SETUP = ('icons/icon-96x96.ico' if OS == 'Windows' else 'icons/icon-96x9
 JZ_ICON_TKINTER = (_here + '/icons/icon-96x96.gif')
 
 DEBUG = False
-DOCS_URL = 'https://canimar.github.io/jpegzilla/'
+DOCS_URL = 'https://noskla.github.io/jpegzilla/'
 
 SUPPORTED_FORMATS = ['*.jpg', '*.jpeg', '*.tga', '*.png']
 
