@@ -15,7 +15,7 @@ from PIL import Image, ImageTk
 
 from conf import (TEMPDIR, JZ_ICON_TKINTER, VER, OS, _here,
 DOCS_URL, DEBUG, SUPPORTED_FORMATS, MOZJPEG_PATH_OVERRIDE,
-_thisfile, _iscompiled)
+LICENSE_URL, SOURCE_URL, _thisfile, _iscompiled)
 
 class jpegzilla:
 
@@ -230,7 +230,7 @@ class jpegzilla:
         def about():
             about_window = tkinter.Toplevel(self.root)
             about_window.wm_title(self.locale['about-title'])
-            about_window.geometry('300x340')
+            about_window.geometry('300x400')
 
             icon = (_here + '/icons/icon-256x256.png')
             image = ImageTk.PhotoImage(Image.open(icon))
@@ -249,6 +249,18 @@ class jpegzilla:
                 )
 
             program_name.pack(side="top", fill="both", expand=True)
+            
+            license_button = tkinter.Button(
+				about_window, text=self.locale['about-license'],
+				command=lambda:webbrowser.open(LICENSE_URL)
+			)
+            source_button = tkinter.Button(
+				about_window, text=self.locale['about-source'],
+				command=lambda:webbrowser.open(SOURCE_URL)
+            )
+            
+            license_button.pack(side="bottom", fill="both")
+            source_button.pack(side="bottom", fill="both")
 
         def reset():
             os.remove(_here + '/locale/locale.txt')

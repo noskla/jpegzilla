@@ -26,6 +26,8 @@ JZ_ICON_TKINTER = (_here + '/icons/icon-96x96.gif')
 
 DEBUG = False
 DOCS_URL = 'https://noskla.github.io/jpegzilla/'
+SOURCE_URL = 'https://github.com/noskla/jpegzilla'
+LICENSE_URL = 'https://raw.githubusercontent.com/noskla/jpegzilla/master/LICENSE'
 
 SUPPORTED_FORMATS = ['*.jpg', '*.jpeg', '*.tga', '*.png']
 
