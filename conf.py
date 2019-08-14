@@ -30,6 +30,7 @@ SOURCE_URL = 'https://github.com/noskla/jpegzilla'
 LICENSE_URL = 'https://raw.githubusercontent.com/noskla/jpegzilla/master/LICENSE'
 
 SUPPORTED_FORMATS = ['*.jpg', '*.jpeg', '*.tga', '*.png']
+SUPPORTED_FORMATS_WITHOUT_STAR = ('.jpg', '.jpeg', '.tga', '.png')
 
 # Put full path to directory containing all required libraries and executables
 # (make sure to use forward slashes)

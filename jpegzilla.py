@@ -5,8 +5,9 @@
 # https://github.com/noskla/jpegzilla
 
 import sys, ntpath, os, subprocess, threading, json
-import math, platform, shutil, glob, re
+import math, platform, shutil, glob, re, validators
 import tkinter, tkinter.ttk, tkinter.filedialog
+import requests
 
 import webbrowser
 
@@ -15,7 +16,8 @@ from PIL import Image, ImageTk
 
 from conf import (TEMPDIR, JZ_ICON_TKINTER, VER, OS, _here,
 DOCS_URL, DEBUG, SUPPORTED_FORMATS, MOZJPEG_PATH_OVERRIDE,
-LICENSE_URL, SOURCE_URL, _thisfile, _iscompiled)
+SUPPORTED_FORMATS_WITHOUT_STAR, LICENSE_URL, SOURCE_URL, 
+_thisfile, _iscompiled)
 
 class jpegzilla:
 
@@ -289,7 +291,7 @@ class jpegzilla:
 
         menubar_file_cascade = tkinter.Menu(self.menubar, tearoff=0)
         menubar_file_cascade.add_command(label=self.locale['menu-import'], command=lambda:self.select_files())
-        menubar_file_cascade.add_command(label=self.locale['menu-import_url'])
+        menubar_file_cascade.add_command(label=self.locale['menu-import_url'], command=lambda:self.select_files(fromurl=True))
         menubar_file_cascade.add_command(label=self.locale['menu-quit'], command=lambda:sys.exit())
 
         menubar_tools_cascade = tkinter.Menu(self.menubar, tearoff=0)
@@ -722,42 +724,98 @@ class jpegzilla:
                 shutil.move(TEMPDIR + filename, location + '/' + filename)
 
 
-    def select_files(self):
-
-        filenames = tkinter.filedialog.askopenfilenames(
-                    initialdir='~',
-                    title=self.locale['select-files-title'],
-                    filetypes=(
-                        (self.locale['select-filetypes']['compatible-formats'], SUPPORTED_FORMATS),
-                        (self.locale['select-filetypes']['all-files'], '*.*')
-                    )
-                )
-        self.filenames = self.root.tk.splitlist(filenames)
-
-        files_already_imported = {}
-        ids_already_imported = self.file_queue.get_children()
-        for node in ids_already_imported:
-            files_already_imported[self.file_queue.item(node)['text']] = self.file_queue.item(node)['values'][1]
+    def select_files(self, fromurl=False):
 
 
-        for image in self.filenames:
+        def add():
+
+            self.print_debug(str(self.filenames))
+            files_already_imported = {}
+            ids_already_imported = self.file_queue.get_children()
+            for node in ids_already_imported:
+                files_already_imported[self.file_queue.item(node)['text']] = self.file_queue.item(node)['values'][1]
+
+
+            for image in self.filenames:
  
-            basename = ntpath.basename(image)
-
-            if (not basename in files_already_imported.keys()) or (not files_already_imported[basename] == self.locale['status-new']):
-                filesize = self.convert_size(os.stat(image).st_size)
-
-                self.file_queue.insert('', 'end', text=basename, values=(
-                         filesize, self.locale['status-new'], image
-                    ))
+                basename = ntpath.basename(image)
+    
+                if (not basename in files_already_imported.keys()) or (not files_already_imported[basename] == self.locale['status-new']):
+                    filesize = self.convert_size(os.stat(image).st_size)
+    
+                    self.file_queue.insert('', 'end', text=basename, values=(
+                             filesize, self.locale['status-new'], image
+                        ))
             
-            else:
-                messagebox.showerror(self.locale['title-error'], self.locale['import-same-file'].format(filename=basename))
+                else:
+                    messagebox.showerror(self.locale['title-error'], self.locale['import-same-file'].format(filename=basename))
 
-        if self.filenames:
-            self.buttons['run'].config(state='normal')
+            if self.filenames:
+                self.buttons['run'].config(state='normal')
 
-        self.queue_label.configure(text=self.locale['loaded-files'].format(str(len(self.file_queue.get_children()))))
+            self.queue_label.configure(text=self.locale['loaded-files'].format(str(len(self.file_queue.get_children()))))
+
+        if fromurl:
+            
+            def download_file():
+                
+                address = url_input_entry.get()
+                self.print_debug("Given URL: " + address)
+                
+                if not validators.url(address):
+                    messagebox.showerror(self.locale['title-error'], self.locale['incorrect-url'])
+                    url_input.destroy()
+                    return
+
+                if not address.endswith(SUPPORTED_FORMATS_WITHOUT_STAR):
+                    self.print_debug(str(SUPPORTED_FORMATS_WITHOUT_STAR))
+                    messagebox.showerror(self.locale['title-error'], self.locale['unsupported-file-format'])
+                    url_input.destroy()
+                    return
+
+                save_directory = TEMPDIR + "jpegzilla_dl/"
+
+                if not os.path.isdir(save_directory):
+                    os.makedirs(save_directory)
+
+                local_file_name = address.split('/')[-1]
+                with requests.get(address, stream=True) as downloading_file:
+                    downloading_file.raise_for_status()
+                    with open(save_directory + local_file_name, "wb") as fl:
+                        for chunk in downloading_file.iter_content(chunk_size=512):
+                            if chunk:
+                                fl.write(chunk)
+                                
+                self.filenames = tuple([(save_directory + local_file_name)])
+                url_input.destroy()
+                add()
+                
+            
+            url_input = tkinter.Toplevel(self.root)
+            url_input.wm_title(self.locale['input-url-title'])
+            url_input.geometry("300x50")
+            url_input.resizable(False, False)
+            url_input.tk.call("wm", "iconphoto", url_input._w, self._icon)
+            
+            url_input_entry = tkinter.Entry(url_input)
+            url_input_submit = tkinter.Button(url_input, text=self.locale['input-window-add'], command=lambda:download_file())
+            url_input_entry.pack(fill="both")
+            
+            url_input_submit.pack()
+			
+        else:
+
+            filenames = tkinter.filedialog.askopenfilenames(
+                        initialdir='~',
+                        title=self.locale['select-files-title'],
+                        filetypes=(
+                            (self.locale['select-filetypes']['compatible-formats'], SUPPORTED_FORMATS),
+                            (self.locale['select-filetypes']['all-files'], '*.*')
+                        )
+                    )
+            self.filenames = self.root.tk.splitlist(filenames)
+            add()
+            
 
     def run(self):
 

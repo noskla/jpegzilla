@@ -56,6 +56,11 @@
 		"compatible-formats": "Kompatybilne formaty plików",
 		"all-files": "Wszystkie pliki"
 	},
+	
+	"incorrect-url": "Podany adres jest nieprawidłowy.",
+	"input-url-title": "Wprowadź adres URL",
+	"input-window-add": "Importuj",
+	"unsupported-file-format": "Niewspierany format pliku.",
 
 	"6": "-- PODGLĄD --",
 	"open-in-image-viewer": "Otwórz w domyślnej przeglądarce zdjęć",

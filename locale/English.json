@@ -57,6 +57,11 @@
 		"compatible-formats": "Compatible file formats",
 		"all-files": "All files"
 	},
+	
+	"incorrect-url": "Given address is not correct.",
+	"input-url-title": "Input URL address",
+	"input-window-add": "Import",
+	"unsupported-file-format": "Unsupported file format.",
 
 	"6": "-- PREVIEW --",
 	"open-in-image-viewer": "Open in system default Image Viewer",
