@@ -67,7 +67,9 @@
 	"menu-tools": "Tools",
 	"menu-help": "Help",
 
-	"menu-import": "Import",
+	"menu-import": "Import from file",
+	"menu-import_url": "Import from URL",
+	"menu-quit": "Exit",
 
 	"menu-reset": "Reconfigure",
 	"menu-updater": "Check for updates",

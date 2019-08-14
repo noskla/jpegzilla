@@ -22,7 +22,7 @@ class jpegzilla:
     def __init__(self, debug_arg):
 
         # Colors
-        self.bg = '#FEFEFE' # Background color
+        self.bg = 'lightgrey' # Background color
         self.fg = '#000000' # Foreground color
         self.fgdis = '#555555' # Foreground color of disabled element
 
@@ -289,6 +289,8 @@ class jpegzilla:
 
         menubar_file_cascade = tkinter.Menu(self.menubar, tearoff=0)
         menubar_file_cascade.add_command(label=self.locale['menu-import'], command=lambda:self.select_files())
+        menubar_file_cascade.add_command(label=self.locale['menu-import_url'])
+        menubar_file_cascade.add_command(label=self.locale['menu-quit'], command=lambda:sys.exit())
 
         menubar_tools_cascade = tkinter.Menu(self.menubar, tearoff=0)
         menubar_tools_cascade.add_command(label=self.locale['menu-reset'], command=lambda:reset())

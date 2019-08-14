@@ -67,7 +67,9 @@
 	"menu-tools": "Narzędzia",
 	"menu-help": "Pomoc",
 
-	"menu-import": "Importuj",
+	"menu-import": "Importuj z pliku",
+	"menu-import_url": "Importuj z adresu URL",
+	"menu-quit": "Wyjdź",
 
 	"menu-reset": "Przeinstaluj",
 	"menu-updater": "Sprawdź aktualizacje",
@@ -76,8 +78,8 @@
 	"menu-website": "Strona www",
 
 	"8": "-- OKNO 'O PROGRAMIE' --",
-  "about-title": "O programie Jpegzilla",
-  "about-license": "Licencja",
+	"about-title": "O programie Jpegzilla",
+	"about-license": "Licencja",
 	"about-source": "Kod źródłowy",
 	"about-credit": "Stworzone przez {author}\nPodziękowania dla deweloperów {dependencies}, dzięki którym ten projekt jest możliwy.",
 
